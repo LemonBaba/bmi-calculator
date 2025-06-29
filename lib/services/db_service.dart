@@ -31,7 +31,7 @@ class DbService {
   }
 
   // BMI Entry
-  Future<void> insertBmiEntry({
+  Future<BmiEntryData> insertBmiEntry({
     required int userId,
     required int categoryId,
     required double weight,
@@ -39,7 +39,7 @@ class DbService {
     required DateTime date,
     required double value,
   }) async {
-    await db.into(db.bmiEntry).insert(BmiEntryCompanion(
+    final id = await db.into(db.bmiEntry).insert(BmiEntryCompanion(
       userId: Value(userId),
       categoryId: Value(categoryId),
       weight: Value(weight),
@@ -47,6 +47,7 @@ class DbService {
       date: Value(date.toIso8601String()),
       value: Value(value),
     ));
+    return (await (db.select(db.bmiEntry)..where((e) => e.id.equals(id))).getSingle());
   }
 
   Future<List<BmiEntryModel>> getBmiEntries(int userId) async {
@@ -143,5 +144,12 @@ class DbService {
   Future<void> deleteGoal(int goalId) async {
     await (db.delete(db.goal)..where((g) => g.id.equals(goalId))).go();
   }
+
+  Future<void> markGoalAsAchieved(int goalId) async {
+    await (db.update(db.goal)..where((g) => g.id.equals(goalId))).write(
+      const GoalCompanion(achieved: Value(true)),
+    );
+  }
+
 
 }
