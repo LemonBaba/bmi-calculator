@@ -26,32 +26,38 @@ class _InputScreenState extends State<InputScreen> {
 
     CategoryData category = await widget.dbService.getCategory(bmi: bmi);
     BmiEntryData insertedEntry = await widget.dbService.insertBmiEntry(userId: widget.userId, categoryId: category.id, weight: weight, height: height, date: DateTime.now(), value: bmi);
-    _triggerAchievement(insertedEntry);
+    _triggerAchievements(insertedEntry);
     setState(() => _result = "BMI: ${bmi.toStringAsFixed(1)}\nKategorie: ${category.name}");
   }
 
-  void _triggerAchievement(BmiEntryData entry) async {
-    final goals = await widget.dbService.getGoalsForUser(widget.userId);
+  void _triggerAchievements(BmiEntryData entry) async {
+    final allGoals = await widget.dbService.getGoalsForUser(widget.userId);
 
-    for (final goal in goals) {
-      if (goal.goal.entryId == null) {
-        final bmiMatch = goal.goal.targetBmi != null &&
-            entry.value.toStringAsFixed(1) == goal.goal.targetBmi!.toStringAsFixed(1);
+    // Collect all matching, unachieved goals
+    final matchedGoals = allGoals.where((goal) {
+      if (goal.goal.entryId != null) return false; // Already achieved
 
-        final catMatch = goal.goal.targetCategory != null &&
-            entry.categoryId == goal.goal.targetCategory;
+      final bmiMatch = goal.goal.targetBmi != null &&
+          entry.value.toStringAsFixed(1) == goal.goal.targetBmi!.toStringAsFixed(1);
 
-        if (bmiMatch || catMatch) {
-          await widget.dbService.markGoalAsAchieved(goal.goal.id, entry.id);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => AchievementScreen(goal: goal),
-            ),
-          );
-          return;
-        }
-      }
+      final catMatch = goal.goal.targetCategory != null &&
+          entry.categoryId == goal.goal.targetCategory;
+
+      return bmiMatch || catMatch;
+    }).toList();
+
+    // Mark all matched goals as achieved
+    for (final goal in matchedGoals) {
+      await widget.dbService.markGoalAsAchieved(goal.goal.id, entry.id);
+    }
+
+    if (matchedGoals.isNotEmpty) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => AchievementScreen(goals: matchedGoals),
+        ),
+      );
     }
   }
 

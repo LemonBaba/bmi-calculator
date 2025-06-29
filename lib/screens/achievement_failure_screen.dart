@@ -3,27 +3,22 @@ import 'package:lottie/lottie.dart';
 import '../models/GoalModel.dart';
 
 class AchievementScreen extends StatelessWidget {
-  final GoalModel goal;
+  final List<GoalModel> goals;
 
-  const AchievementScreen({super.key, required this.goal});
+  const AchievementScreen({super.key, required this.goals});
 
   @override
   Widget build(BuildContext context) {
-    final message = goal.category != null
-        ? "Kategorie-Ziel ${goal.category!.name} erreicht"
-        : "BMI-Ziel ${goal.goal.targetBmi!.toStringAsFixed(1)} erreicht";
-
     return Scaffold(
       body: Stack(
         children: [
-          SizedBox.expand(
+          Positioned.fill(
             child: Lottie.asset(
               'assets/animations/fireworks.json',
               fit: BoxFit.cover,
               repeat: true,
             ),
           ),
-
           Positioned.fill(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -43,13 +38,19 @@ class AchievementScreen extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 12),
-                      Text(
-                        message,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Colors.black,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
+                      ...goals.map((goal) {
+                        final msg = goal.category != null
+                            ? "Kategorie-Ziel ${goal.category!.name} erreicht"
+                            : "BMI-Ziel ${goal.goal.targetBmi?.toStringAsFixed(1)} erreicht";
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Text(
+                            msg,
+                            style: Theme.of(context).textTheme.titleMedium,
+                            textAlign: TextAlign.center,
+                          ),
+                        );
+                      }).toList(),
                       const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () => Navigator.pop(context),
