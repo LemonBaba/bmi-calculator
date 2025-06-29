@@ -18,6 +18,17 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
   final _noteController = TextEditingController();
 
   int? _selectedCategoryId;
+  BmiEntryData? _lastEntry;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.dbService.getLatestEntry(widget.userId).then((entry) {
+      setState(() {
+        _lastEntry = entry;
+      });
+    });
+  }
 
   @override
   void dispose() {
@@ -42,7 +53,6 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
               key: _formKey,
               child: Column(
                 children: [
-                  // Kategorie-Auswahl
                   DropdownButtonFormField<int>(
                     value: _selectedCategoryId,
                     decoration: const InputDecoration(labelText: "Kategorie"),
@@ -56,8 +66,6 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
                         ? null
                         : (value) => setState(() => _selectedCategoryId = value),
                   ),
-
-                  // Ziel-BMI Eingabe
                   TextFormField(
                     controller: _bmiController,
                     keyboardType: TextInputType.number,
@@ -71,15 +79,11 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
                       });
                     },
                   ),
-
-                  // Notizfeld
                   TextFormField(
                     controller: _noteController,
                     decoration: const InputDecoration(labelText: "Notiz (optional)"),
                   ),
-
                   const SizedBox(height: 20),
-
                   ElevatedButton(
                     onPressed: _saveGoal,
                     child: const Text("Ziel speichern"),
@@ -102,6 +106,23 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
         const SnackBar(content: Text("Bitte entweder Kategorie oder Ziel-BMI angeben.")),
       );
       return;
+    }
+
+    if (_lastEntry != null) {
+      if (_selectedCategoryId != null && _selectedCategoryId == _lastEntry!.categoryId) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Du befindest dich bereits in dieser Kategorie.")),
+        );
+        return;
+      }
+
+      if (bmi != null &&
+          bmi.toStringAsFixed(1) == _lastEntry!.value.toStringAsFixed(1)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Dein aktueller BMI entspricht bereits dem Ziel.")),
+        );
+        return;
+      }
     }
 
     await widget.dbService.insertGoal(

@@ -67,6 +67,14 @@ class DbService {
     }).get();
   }
 
+  Future<BmiEntryData?> getLatestEntry(int userId) async {
+    return (db.select(db.bmiEntry)
+      ..where((e) => e.userId.equals(userId))
+      ..orderBy([(e) => OrderingTerm.desc(e.date)])
+      ..limit(1))
+        .getSingleOrNull();
+  }
+
   // CATEGORIES
   Future<void> insertCategory(String name, double from, double to) {
     return db.into(db.category).insert(CategoryCompanion(
