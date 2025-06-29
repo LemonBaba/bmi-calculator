@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import '../models/BmiEntryModel.dart';
+import '../models/GoalModel.dart';
 import '../database/app_database.dart'; // your Drift database file
 
 class DbService {
@@ -111,8 +112,28 @@ class DbService {
     ));
   }
 
+  Future<List<GoalModel>> getGoalsForUser(int userId) async {
+    final query = db.select(db.goal).join([
+      leftOuterJoin(db.category, db.category.id.equalsExp(db.goal.targetCategory))
+    ])
+      ..where(db.goal.userId.equals(userId));
+
+    final rows = await query.get();
+
+    return rows.map((row) {
+      return GoalModel(
+        row.readTable(db.goal),
+        row.readTableOrNull(db.category),
+      );
+    }).toList();
+  }
+
   Future<List<GoalData>> getUserGoals(int userId) {
     return (db.select(db.goal)..where((g) => g.userId.equals(userId))).get();
+  }
+
+  Future<void> deleteGoal(int goalId) async {
+    await (db.delete(db.goal)..where((g) => g.id.equals(goalId))).go();
   }
 
 }

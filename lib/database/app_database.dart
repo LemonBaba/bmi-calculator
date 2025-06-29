@@ -35,6 +35,7 @@ class Goal extends Table {
   RealColumn get targetBmi => real().nullable()();
   IntColumn get targetCategory => integer().nullable().references(Category, #id)();
   TextColumn get note => text().nullable()();
+  BoolColumn get achieved => boolean().withDefault(const Constant(false))();
 }
 
 @DriftDatabase(tables: [User, BmiEntry, Goal, Category])
