@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
-
+import '../services/db_service.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  final DbService dbService;
+
+  const RegisterScreen({super.key, required this.dbService});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -18,23 +18,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString('registered_users');
-    Map<String, String> users = {};
+    final exists = await widget.dbService.userExists(email);
 
-    if (jsonString != null) {
-      users = Map<String, String>.from(jsonDecode(jsonString));
-    }
-
-    if (users.containsKey(email)) {
+    if (exists) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Benutzer existiert bereits.")),
       );
       return;
     }
 
-    users[email] = password;
-    await prefs.setString('registered_users', jsonEncode(users));
+    await widget.dbService.registerUser(email, password);
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -42,7 +35,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
     Navigator.pop(context);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -52,10 +44,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            TextField(controller: _emailController, decoration: const InputDecoration(labelText: 'E-Mail')),
-            TextField(controller: _passwordController, decoration: const InputDecoration(labelText: 'Passwort'), obscureText: true),
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'E-Mail'),
+            ),
+            TextField(
+              controller: _passwordController,
+              decoration: const InputDecoration(labelText: 'Passwort'),
+              obscureText: true,
+            ),
             const SizedBox(height: 20),
-            ElevatedButton(onPressed: _register, child: const Text("Registrieren")),
+            ElevatedButton(
+              onPressed: _register,
+              child: const Text("Registrieren"),
+            ),
           ],
         ),
       ),

@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'input_screen.dart';
 import 'history_screen.dart';
 import 'categories_screen.dart';
+import '../database/app_database.dart';
+import '../services/db_service.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final DbService dbService;
+  final UserData user;
+
+  const HomeScreen({super.key, required this.dbService, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -15,15 +20,15 @@ class HomeScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const InputScreen())),
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => InputScreen(dbService: dbService, userId: user.id))),
                 child: const Text("Neue Messung")
             ),
             ElevatedButton(
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HistoryScreen())),
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => HistoryScreen(dbService: dbService, userId: user.id))),
                 child: const Text("Messverlauf")
             ),
             ElevatedButton(
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CategoriesScreen())),
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CategoriesScreen(dbService: dbService, userId: user.id))),
                 child: const Text("BMI Kategorien")
             )
           ],

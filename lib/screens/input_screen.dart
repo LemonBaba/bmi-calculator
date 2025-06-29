@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import '../models/bmi_entry.dart';
-import '../services/local_storage_service.dart';
+import '../database/app_database.dart';
+import '../services/db_service.dart';
 
 class InputScreen extends StatefulWidget {
-  const InputScreen({super.key});
+  final DbService dbService;
+  final int userId;
+
+  const InputScreen({super.key, required this.dbService, required this.userId});
 
   @override
   State<InputScreen> createState() => _InputScreenState();
@@ -18,10 +21,11 @@ class _InputScreenState extends State<InputScreen> {
     final weight = double.tryParse(_weightController.text);
     final height = double.tryParse(_heightController.text);
     if (weight == null || height == null) return;
+    double bmi = weight / ((height / 100) * (height / 100));
 
-    final entry = BmiEntry(weight: weight, height: height, date: DateTime.now());
-    await LocalStorageService.saveEntry(entry);
-    setState(() => _result = "BMI: ${entry.bmi.toStringAsFixed(1)}\nKategorie: ${entry.category}");
+    CategoryData category = await widget.dbService.getCategory(bmi: bmi);
+    widget.dbService.insertBmiEntry(userId: widget.userId, categoryId: category.id, weight: weight, height: height, date: DateTime.now(), value: bmi);
+    setState(() => _result = "BMI: ${bmi.toStringAsFixed(1)}\nKategorie: ${category.name}");
   }
 
   @override

@@ -11,3 +11,8 @@ This is a Flutter BMI calculator school project. That should meet the following 
 - View details for a category
 - Create user
 - Select user
+
+
+wenn etwas an datenbank struktur geändert wird:
+´´dart run build_runner build --delete-conflicting-outputs´´
+

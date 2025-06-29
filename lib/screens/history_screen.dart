@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
-import '../models/bmi_entry.dart';
-import '../services/local_storage_service.dart';
+import '../services/db_service.dart';
+import '../models/BmiEntryModel.dart';
 import 'package:intl/intl.dart';
 
 class HistoryScreen extends StatelessWidget {
-  const HistoryScreen({super.key});
+  final DbService dbService;
+  final int userId;
+
+  const HistoryScreen({super.key, required this.dbService, required this.userId});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Messverlauf")),
-      body: FutureBuilder<List<BmiEntry>>(
-        future: LocalStorageService.getEntries(),
+      body: FutureBuilder<List<BmiEntryModel>>(
+        future: dbService.getBmiEntries(userId),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
           final entries = snapshot.data!;
@@ -22,8 +25,8 @@ class HistoryScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final e = entries[index];
               return ListTile(
-                title: Text("${e.bmi.toStringAsFixed(1)} (${e.category})"),
-                subtitle: Text("Gewicht: ${e.weight} kg, Größe: ${e.height} cm\n${DateFormat.yMd().add_Hm().format(e.date)}"),
+                title: Text("${e.entry.value.toStringAsFixed(1)} (${e.category.name})"),
+                subtitle: Text("Gewicht: ${e.entry.weight} kg, Größe: ${e.entry.height} cm\n${DateFormat.yMd().add_Hm().format(DateTime.parse(e.entry.date))}"),
               );
             },
           );
