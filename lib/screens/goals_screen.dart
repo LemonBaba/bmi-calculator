@@ -22,8 +22,16 @@ class _GoalsScreenState extends State<GoalsScreen> {
     _loadGoals();
   }
 
-  void _loadGoals() {
-    _goalFuture = widget.dbService.getGoalsForUser(widget.userId);
+  void _loadGoals() async {
+    _goalFuture = widget.dbService.getGoalsForUser(widget.userId).then((goals) {
+      goals.sort((a, b) {
+        final aAchieved = a.goal.entryId != null;
+        final bAchieved = b.goal.entryId != null;
+        if (aAchieved == bAchieved) return 0;
+        return aAchieved ? 1 : -1;
+      });
+      return goals;
+    });
   }
 
   Future<void> _navigateToAddGoal() async {
