@@ -18,6 +18,21 @@ class _InputScreenState extends State<InputScreen> {
   final _heightController = TextEditingController();
   String? _result;
 
+  @override
+  void initState() {
+    super.initState();
+    _prefillHeight();
+  }
+
+  void _prefillHeight() async {
+    final lastEntry = await widget.dbService.getLatestEntry(widget.userId);
+    if (lastEntry != null) {
+      setState(() {
+        _heightController.text = lastEntry.height.toStringAsFixed(1);
+      });
+    }
+  }
+
   void _calculateAndSave() async {
     final weight = double.tryParse(_weightController.text);
     final height = double.tryParse(_heightController.text);
