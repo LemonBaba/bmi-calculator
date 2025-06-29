@@ -14,43 +14,49 @@ class AchievementScreen extends StatelessWidget {
         : "BMI-Ziel ${goal.goal.targetBmi!.toStringAsFixed(1)} erreicht";
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Ziel erreicht")),
-      body: Column(
+      body: Stack(
         children: [
-          // 🎆 Fullscreen-ish Animation
-          Expanded(
-            child: Center(
-              child: AspectRatio(
-                aspectRatio: 1, // or 16/9, or let it fill
-                child: Lottie.asset(
-                  'assets/animations/fireworks.json',
-                  fit: BoxFit.contain,
-                  repeat: true,
-                ),
-              ),
+          SizedBox.expand(
+            child: Lottie.asset(
+              'assets/animations/fireworks.json',
+              fit: BoxFit.cover,
+              repeat: true,
             ),
           ),
 
-          // 🎯 Text content
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12),
+          Positioned.fill(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Text(
-                  "Glückwunsch!",
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.green),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  message,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text("Zurück zur Übersicht"),
+                Container(
+                  margin: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "Glückwunsch!",
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        message,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Colors.black,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text("Zurück"),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
