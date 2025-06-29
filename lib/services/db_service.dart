@@ -50,6 +50,10 @@ class DbService {
     return (await (db.select(db.bmiEntry)..where((e) => e.id.equals(id))).getSingle());
   }
 
+  Future<void> deleteBmiEntry(int entryId) async {
+    await (db.delete(db.bmiEntry)..where((e) => e.id.equals(entryId))).go();
+  }
+
   Future<List<BmiEntryModel>> getBmiEntries(int userId) async {
     final query = db.select(db.bmiEntry).join([
       innerJoin(db.category, db.category.id.equalsExp(db.bmiEntry.categoryId))
@@ -145,11 +149,14 @@ class DbService {
     await (db.delete(db.goal)..where((g) => g.id.equals(goalId))).go();
   }
 
-  Future<void> markGoalAsAchieved(int goalId) async {
-    await (db.update(db.goal)..where((g) => g.id.equals(goalId))).write(
-      const GoalCompanion(achieved: Value(true)),
+  Future<void> markGoalAsAchieved(int goalId, int entryId) async {
+    await (db.update(db.goal)
+      ..where((tbl) => tbl.id.equals(goalId)))
+        .write(
+      GoalCompanion(
+        entryId: Value(entryId),
+      ),
     );
+
   }
-
-
 }

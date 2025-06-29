@@ -132,7 +132,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
                   child: ListTile(
                     leading: Icon(
                       Icons.flag,
-                      color: g.goal.achieved ? Colors.green : Colors.grey,
+                      color: g.goal.entryId != null ? Colors.green : Colors.grey,
                     ),
                     title: hasCategory
                         ? Text("Kategorie: ${g.category!.name}")

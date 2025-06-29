@@ -35,7 +35,7 @@ class Goal extends Table {
   RealColumn get targetBmi => real().nullable()();
   IntColumn get targetCategory => integer().nullable().references(Category, #id)();
   TextColumn get note => text().nullable()();
-  BoolColumn get achieved => boolean().withDefault(const Constant(false))();
+  IntColumn get entryId => integer().nullable().references(BmiEntry, #id, onDelete: KeyAction.setNull)();
 }
 
 @DriftDatabase(tables: [User, BmiEntry, Goal, Category])
@@ -49,7 +49,7 @@ class AppDatabase extends _$AppDatabase {
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (Migrator m) async {
       await m.createAll();
-
+      await customStatement('PRAGMA foreign_keys = ON');
       await batch((batch) {
         batch.insertAll(category, [
           CategoryCompanion.insert(name: 'Untergewicht', from: 0, to: 18.5),
@@ -61,6 +61,10 @@ class AppDatabase extends _$AppDatabase {
         ]);
       });
     },
+    beforeOpen: (m) async {
+      await customStatement('PRAGMA foreign_keys = ON');
+    },
+
   );
 }
 

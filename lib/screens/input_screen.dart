@@ -34,7 +34,7 @@ class _InputScreenState extends State<InputScreen> {
     final goals = await widget.dbService.getGoalsForUser(widget.userId);
 
     for (final goal in goals) {
-      if (!goal.goal.achieved) {
+      if (goal.goal.entryId == null) {
         final bmiMatch = goal.goal.targetBmi != null &&
             entry.value.toStringAsFixed(1) == goal.goal.targetBmi!.toStringAsFixed(1);
 
@@ -42,7 +42,7 @@ class _InputScreenState extends State<InputScreen> {
             entry.categoryId == goal.goal.targetCategory;
 
         if (bmiMatch || catMatch) {
-          await widget.dbService.markGoalAsAchieved(goal.goal.id);
+          await widget.dbService.markGoalAsAchieved(goal.goal.id, entry.id);
           Navigator.push(
             context,
             MaterialPageRoute(
