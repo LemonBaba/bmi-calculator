@@ -28,11 +28,24 @@ class _GoalsScreenState extends State<GoalsScreen> {
       goals.sort((a, b) {
         final aAchieved = a.achievements.isNotEmpty;
         final bAchieved = b.achievements.isNotEmpty;
-        if (aAchieved == bAchieved) return 0;
-        return aAchieved ? 1 : -1;
+
+        if (!aAchieved && bAchieved) return -1;
+        if (aAchieved && !bAchieved) return 1;
+
+        if (!aAchieved && !bAchieved) return 0;
+
+        // Both achieved – compare by most recent achievement date (descending)
+        final aDate = DateTime.parse(
+            a.achievements.map((ach) => ach.achievementDate).reduce((a, b) => a.compareTo(b) > 0 ? a : b));
+        final bDate = DateTime.parse(
+            b.achievements.map((ach) => ach.achievementDate).reduce((a, b) => a.compareTo(b) > 0 ? a : b));
+
+        return bDate.compareTo(aDate); // descending
       });
+
       return goals;
     });
+
   }
 
   Future<void> _navigateToAddGoal() async {
