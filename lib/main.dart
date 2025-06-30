@@ -18,10 +18,10 @@ class BmiApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'BMI Calculator & Manager',
+      title: 'BMI Manager',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF1565C0)), // deep blue
+        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF1565C0)),
         useMaterial3: true,
         scaffoldBackgroundColor: Colors.white,
         appBarTheme: const AppBarTheme(

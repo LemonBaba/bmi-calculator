@@ -1,3 +1,4 @@
+import 'package:bmi_manager/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import '../services/db_service.dart';
 import '../database/app_database.dart';
@@ -25,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _screens = [
       HistoryScreen(dbService: widget.dbService, userId: widget.user.id),
       GoalsScreen(dbService: widget.dbService, userId: widget.user.id),
+      SettingsScreen(dbService: widget.dbService),
     ];
   }
 
@@ -46,6 +48,10 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.flag),
             label: "Ziele",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: "Einstellungen",
           ),
         ],
       ),
