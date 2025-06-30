@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'login_screen.dart';
 import '../services/db_service.dart';
 import '../l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
   final DbService dbService;
@@ -22,8 +23,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _selectedLang = Localizations.localeOf(context).languageCode;
   }
 
-  void _changeLanguage(String langCode) {
+  Future<void> _changeLanguage(String langCode) async {
     setState(() => _selectedLang = langCode);
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('locale', langCode);
 
     BmiApp.setLocale(context, Locale(langCode));
   }

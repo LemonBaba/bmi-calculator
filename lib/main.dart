@@ -3,22 +3,28 @@ import 'screens/login_screen.dart';
 import 'services/db_service.dart';
 import 'database/app_database.dart';
 import '../l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  final prefs = await SharedPreferences.getInstance();
+  final savedLocaleCode = prefs.getString('locale');
+  final locale = savedLocaleCode != null ? Locale(savedLocaleCode) : null;
+
   await resetDatabase(); // todo remove
   final db = AppDatabase();
   final dbService = DbService(db);
 
-  runApp(BmiApp(dbService: dbService));
+  runApp(BmiApp(dbService: dbService, initialLocale: locale));
 }
 
 class BmiApp extends StatefulWidget {
   final DbService dbService;
+  final Locale? initialLocale;
 
-  const BmiApp({super.key, required this.dbService});
+  const BmiApp({super.key, required this.dbService, this.initialLocale});
 
-  // This is how we expose the language change to the whole app
   static void setLocale(BuildContext context, Locale newLocale) {
     final _BmiAppState? state = context.findAncestorStateOfType<_BmiAppState>();
     state?.setLocale(newLocale);
@@ -31,10 +37,14 @@ class BmiApp extends StatefulWidget {
 class _BmiAppState extends State<BmiApp> {
   Locale? _locale;
 
+  @override
+  void initState() {
+    super.initState();
+    _locale = widget.initialLocale;
+  }
+
   void setLocale(Locale newLocale) {
-    setState(() {
-      _locale = newLocale;
-    });
+    setState(() => _locale = newLocale);
   }
 
   @override
@@ -52,7 +62,7 @@ class _BmiAppState extends State<BmiApp> {
             return supportedLocale;
           }
         }
-        return const Locale('en'); // fallback
+        return const Locale('en');
       },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1565C0)),
