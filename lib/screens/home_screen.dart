@@ -24,7 +24,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _screens = [
-      InputScreen(dbService: widget.dbService, userId: widget.user.id),
       HistoryScreen(dbService: widget.dbService, userId: widget.user.id),
       GoalsScreen(dbService: widget.dbService, userId: widget.user.id),
     ];
@@ -41,10 +40,6 @@ class _HomeScreenState extends State<HomeScreen> {
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add),
-            label: "Neu",
-          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.history),
             label: "Verlauf",

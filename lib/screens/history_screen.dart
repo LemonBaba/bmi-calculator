@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/db_service.dart';
 import '../models/BmiEntryModel.dart';
 import 'categories_screen.dart';
+import 'input_screen.dart';
 import 'package:intl/intl.dart';
 
 class HistoryScreen extends StatefulWidget {
@@ -49,7 +50,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return confirmed ?? false;
   }
 
-
+  Future<void> _navigateToAddBmiEntry() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => InputScreen(dbService: widget.dbService, userId: widget.userId),
+      ),
+    );
+    _loadEntries();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,6 +142,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
             },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _navigateToAddBmiEntry,
+        child: const Icon(Icons.add),
       ),
     );
   }

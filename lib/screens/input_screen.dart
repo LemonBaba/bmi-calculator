@@ -44,7 +44,8 @@ class _InputScreenState extends State<InputScreen> {
     CategoryData category = await widget.dbService.getCategory(bmi: bmi);
     BmiEntryData insertedEntry = await widget.dbService.insertBmiEntry(userId: widget.userId, categoryId: category.id, weight: weight, height: height, date: DateTime.now(), value: bmi);
     _triggerAchievements(insertedEntry);
-    setState(() => _result = "BMI: ${bmi.toStringAsFixed(1)}\nKategorie: ${category.name}");
+
+    if (mounted) Navigator.pop(context);
   }
 
   void _triggerAchievements(BmiEntryData entry) async {
@@ -121,10 +122,6 @@ class _InputScreenState extends State<InputScreen> {
               padding: const EdgeInsets.only(top: 20.0),
               child: ElevatedButton(onPressed: _calculateAndSave, child: const Text("Berechnen & Speichern")),
             ),
-            if (_result != null) ...[
-              const SizedBox(height: 20),
-              Text(_result!, textAlign: TextAlign.center, style: const TextStyle(fontSize: 18))
-            ]
           ],
         ),
       ),
