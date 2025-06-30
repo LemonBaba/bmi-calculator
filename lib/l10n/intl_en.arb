@@ -1,0 +1,109 @@
+{
+  "@@locale": "en",
+  "congratulations": "Congratulations!",
+  "goal_bmi_achieved": "BMI-Goal {goal} achieved",
+  "@goal_bmi_achieved": {
+    "description": "Goal achieved message with goal",
+    "placeholders": {
+      "goal": {}
+    }
+  },
+  "back": "Back",
+  "bmiCategories": "BMI Categories",
+  "noCategoriesFound": "No categories found.",
+  "bmiRange": "BMI: {from} – {to}",
+  "@bmiRange": {
+    "description": "Label showing the BMI range for a category",
+    "placeholders": {
+      "from": {},
+      "to": {}
+    }
+  },
+  "categoryDetail": "Category: {name}\nBMI range: {range}",
+  "@categoryDetail": {
+    "description": "Details of the selected BMI category",
+    "placeholders": {
+      "name": {},
+      "range": {}
+    }
+  },
+  "newGoal": "New Goal",
+  "category": "Category",
+  "targetBmi": "Target BMI",
+  "saveGoal": "Save Goal",
+  "errorProvideCategoryOrBmi": "Please provide either a category or a target BMI.",
+  "errorAlreadyInCategory": "You are already in this category.",
+  "errorAlreadyAtTargetBmi": "Your current BMI already matches the target.",
+  "errorDuplicateGoal": "An identical unachieved goal already exists.",
+  "goalsTitle": "Goals",
+  "noGoalsAvailable": "No goals available.",
+  "deleteGoalTitle": "Delete Goal",
+  "deleteGoalConfirm": "Do you really want to delete this goal?",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "goalDeleted": "Goal deleted.",
+  "achievedOn": "Achieved on: {date}",
+  "@achievedOn": {
+    "description": "Date when the goal was achieved",
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "categoryLabel": "Category: {name}",
+  "@categoryLabel": {
+    "description": "Label for goal based on category",
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "bmiGoalLabel": "Target BMI: {bmi}",
+  "@bmiGoalLabel": {
+    "description": "Label for goal based on target BMI",
+    "placeholders": {
+      "bmi": {}
+    }
+  },
+  "historyTitle": "Measurement History",
+  "noEntriesFound": "No entries found.",
+  "deleteEntryTitle": "Delete Entry",
+  "deleteEntryConfirm": "Do you really want to delete this entry?",
+  "entryDeleted": "Entry deleted.",
+  "bmiCategoryValue": "{bmi} ({category})",
+  "@bmiCategoryValue": {
+    "description": "BMI value and category name",
+    "placeholders": {
+      "bmi": {},
+      "category": {}
+    }
+  },
+  "entryDetails": "Weight: {weight} kg, Height: {height} cm\n{date}",
+  "@entryDetails": {
+    "description": "Measurement details including weight, height and date",
+    "placeholders": {
+      "weight": {},
+      "height": {},
+      "date": {}
+    }
+  },
+  "navHistory": "History",
+  "navGoals": "Goals",
+  "navSettings": "Settings",
+  "newMeasurement": "New Measurement",
+  "weightInput": "Weight (kg)",
+  "heightInput": "Height (cm)",
+  "calculateAndSave": "Calculate & Save",
+  "loginTitle": "Login",
+  "usernameLabel": "Username",
+  "passwordLabel": "Password",
+  "loginButton": "Login",
+  "registerPrompt": "Don't have an account? Register",
+  "loginFailed": "Login failed",
+  "registrationTitle": "Register",
+  "registerButton": "Register",
+  "userAlreadyExists": "User already exists.",
+  "registrationSuccess": "Registration successful.",
+  "settingsTitle": "Settings",
+  "logoutButton": "Log out",
+  "languageEnglish": "English",
+  "languageGerman": "German"
+}

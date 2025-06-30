@@ -4,6 +4,7 @@ import '../models/BmiEntryModel.dart';
 import 'categories_screen.dart';
 import 'input_screen.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_localizations.dart';
 
 class HistoryScreen extends StatefulWidget {
   final DbService dbService;
@@ -29,24 +30,27 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Future<bool> _confirmDelete(BuildContext context, int entryId) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Eintrag löschen"),
-        content: const Text("Möchtest du diesen Eintrag wirklich löschen?"),
+        title: Text(l10n.deleteEntryTitle),
+        content: Text(l10n.deleteEntryConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text("Abbrechen"),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text("Löschen", style: TextStyle(color: Colors.red)),
+            child: Text(
+              l10n.delete,
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
     );
-
     return confirmed ?? false;
   }
 
@@ -63,16 +67,23 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Messverlauf"),
+        title: Text(l10n.historyTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => CategoriesScreen(dbService: widget.dbService, userId: widget.userId)),
+                MaterialPageRoute(
+                  builder: (_) => CategoriesScreen(
+                    dbService: widget.dbService,
+                    userId: widget.userId,
+                  ),
+                ),
               );
             },
           ),
@@ -84,9 +95,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
           if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
 
           final entries = snapshot.data!;
-          if (entries.isEmpty) return const Center(child: Text("Keine Einträge gefunden."));
+          if (entries.isEmpty) {
+            return Center(child: Text(l10n.noEntriesFound));
+          }
 
-          // Sort by date descending
           entries.sort((a, b) => b.entry.date.compareTo(a.entry.date));
 
           return ListView.builder(
@@ -106,39 +118,33 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 confirmDismiss: (_) => _confirmDelete(context, e.entry.id),
                 onDismissed: (_) async {
                   await widget.dbService.deleteBmiEntry(e.entry.id, widget.userId);
-
                   setState(() {
                     entries.removeAt(index);
                   });
-
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Eintrag gelöscht.")),
+                    SnackBar(content: Text(l10n.entryDeleted)),
                   );
                 },
                 child: Card(
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   elevation: 3,
                   child: ListTile(
-                    title: Text("${e.entry.value.toStringAsFixed(1)} (${e.category.name})"),
-                    subtitle: Text(
-                      "Gewicht: ${e.entry.weight} kg, Größe: ${e.entry.height} cm\n${DateFormat("dd.MM.yyy").add_Hm().format(DateTime.parse(e.entry.date))}",
+                    title: Text(
+                      l10n.bmiCategoryValue(
+                        e.entry.value.toStringAsFixed(1),
+                        e.category.name,
+                      ),
                     ),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () async {
-                        final confirmed = await _confirmDelete(context, e.entry.id);
-                        if (confirmed) {
-                          await widget.dbService.deleteBmiEntry(e.entry.id, widget.userId);
-                          setState(() {
-                            entries.removeAt(index);
-                          });
-                        }
-                      },
+                    subtitle: Text(
+                      l10n.entryDetails(
+                        e.entry.weight.toStringAsFixed(1),
+                        e.entry.height.toStringAsFixed(0),
+                        DateFormat("dd.MM.yyyy").add_Hm().format(DateTime.parse(e.entry.date)),
+                      ),
                     ),
                   ),
                 ),
               );
-
             },
           );
         },

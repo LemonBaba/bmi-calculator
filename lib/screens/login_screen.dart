@@ -3,6 +3,7 @@ import 'home_screen.dart';
 import 'register_screen.dart';
 import '../services/db_service.dart';
 import 'package:lottie/lottie.dart';
+import '../l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   final DbService dbService;
@@ -37,62 +38,60 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         _showFailedLoginMessage();
       }
-    } catch (e) {
+    } catch (_) {
       _showFailedLoginMessage();
     }
   }
 
   void _showFailedLoginMessage() {
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Login fehlgeschlagen")),
+      SnackBar(content: Text(l10n.loginFailed)),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Login")),
+      appBar: AppBar(title: Text(l10n.loginTitle)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             TextField(
               controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Username'),
+              decoration: InputDecoration(labelText: l10n.usernameLabel),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10.0),
-              child: TextField(
-                controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Passwort'),
-                obscureText: true,
-              ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _passwordController,
+              decoration: InputDecoration(labelText: l10n.passwordLabel),
+              obscureText: true,
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _login,
-              child: const Text("Login"),
+              child: Text(l10n.loginButton),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10.0),
-              child: TextButton(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => RegisterScreen(dbService: widget.dbService),
-                  ),
+            const SizedBox(height: 10),
+            TextButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => RegisterScreen(dbService: widget.dbService),
                 ),
-                child: const Text("Noch kein Konto? Registrieren"),
               ),
+              child: Text(l10n.registerPrompt),
             ),
             Expanded(
               child: Lottie.asset(
-                  'assets/animations/body_scan.json',
-                  height: 200,
-                  fit: BoxFit.contain,
-                )
-              ,)
-
+                'assets/animations/body_scan.json',
+                height: 200,
+                fit: BoxFit.contain,
+              ),
+            ),
           ],
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import '../models/GoalModel.dart';
+import '../l10n/app_localizations.dart';
 
 class AchievementScreen extends StatelessWidget {
   final List<GoalModel> goals;
@@ -30,7 +31,7 @@ class AchievementScreen extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        "Glückwunsch!",
+                        AppLocalizations.of(context)!.congratulations,
                         style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           color: Colors.green,
                           fontWeight: FontWeight.bold,
@@ -39,13 +40,13 @@ class AchievementScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 12),
                       ...goals.map((goal) {
-                        final msg = goal.category != null
-                            ? "Kategorie-Ziel ${goal.category!.name} erreicht"
-                            : "BMI-Ziel ${goal.goal.targetBmi?.toStringAsFixed(1)} erreicht";
+                        final goalText = goal.category != null
+                            ? goal.category!.name
+                            : goal.goal.targetBmi?.toStringAsFixed(1);
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Text(
-                            msg,
+                            AppLocalizations.of(context)!.goal_bmi_achieved(goalText ?? ""),
                             style: Theme.of(context).textTheme.titleMedium,
                             textAlign: TextAlign.center,
                           ),
@@ -54,7 +55,7 @@ class AchievementScreen extends StatelessWidget {
                       const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text("Zurück"),
+                        child: Text(AppLocalizations.of(context)!.back,),
                       ),
                     ],
                   ),

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'achievement_failure_screen.dart';
 import '../database/app_database.dart';
 import '../services/db_service.dart';
 import 'categories_screen.dart';
-import 'package:flutter/services.dart';
+import '../l10n/app_localizations.dart';
 
 class InputScreen extends StatefulWidget {
   final DbService dbService;
@@ -38,10 +39,19 @@ class _InputScreenState extends State<InputScreen> {
     final weight = double.tryParse(_weightController.text);
     final height = double.tryParse(_heightController.text);
     if (weight == null || height == null) return;
-    double bmi = weight / ((height / 100) * (height / 100));
 
-    CategoryData category = await widget.dbService.getCategory(bmi: bmi);
-    BmiEntryData insertedEntry = await widget.dbService.insertBmiEntry(userId: widget.userId, categoryId: category.id, weight: weight, height: height, date: DateTime.now(), value: bmi);
+    final bmi = weight / ((height / 100) * (height / 100));
+    final category = await widget.dbService.getCategory(bmi: bmi);
+
+    final insertedEntry = await widget.dbService.insertBmiEntry(
+      userId: widget.userId,
+      categoryId: category.id,
+      weight: weight,
+      height: height,
+      date: DateTime.now(),
+      value: bmi,
+    );
+
     _triggerAchievements(insertedEntry);
 
     if (mounted) Navigator.pop(context);
@@ -50,9 +60,7 @@ class _InputScreenState extends State<InputScreen> {
   void _triggerAchievements(BmiEntryData entry) async {
     final allGoals = await widget.dbService.getGoalsForUser(widget.userId);
 
-    // Collect all matching, unachieved goals
     final matchedGoals = allGoals.where((goal) {
-
       final bmiMatch = goal.goal.targetBmi != null &&
           entry.value.toStringAsFixed(1) == goal.goal.targetBmi!.toStringAsFixed(1);
 
@@ -64,7 +72,6 @@ class _InputScreenState extends State<InputScreen> {
       return (bmiMatch || catMatch) && notAchieved;
     }).toList();
 
-    // Mark all matched goals as achieved
     for (final goal in matchedGoals) {
       await widget.dbService.markGoalAsAchieved(goal.goal.id, entry.id);
     }
@@ -81,16 +88,23 @@ class _InputScreenState extends State<InputScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Neue Messung"),
+        title: Text(l10n.newMeasurement),
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => CategoriesScreen(dbService: widget.dbService, userId: widget.userId)),
+                MaterialPageRoute(
+                  builder: (_) => CategoriesScreen(
+                    dbService: widget.dbService,
+                    userId: widget.userId,
+                  ),
+                ),
               );
             },
           ),
@@ -101,25 +115,26 @@ class _InputScreenState extends State<InputScreen> {
         child: Column(
           children: [
             TextField(
-                controller: _weightController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-                ],
-                decoration: const InputDecoration(labelText: 'Gewicht (kg)')),
-            Padding(
-                padding: const EdgeInsets.only(top: 10.0),
-                child: TextField(
-                    controller: _heightController,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-                    ],
-                    decoration: const InputDecoration(labelText: 'Größe (cm)')),
+              controller: _weightController,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+              ],
+              decoration: InputDecoration(labelText: l10n.weightInput),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 20.0),
-              child: ElevatedButton(onPressed: _calculateAndSave, child: const Text("Berechnen & Speichern")),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _heightController,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+              ],
+              decoration: InputDecoration(labelText: l10n.heightInput),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _calculateAndSave,
+              child: Text(l10n.calculateAndSave),
             ),
           ],
         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/db_service.dart';
 import '../database/app_database.dart';
+import '../l10n/app_localizations.dart';
 
 class GoalFormScreen extends StatefulWidget {
   final DbService dbService;
@@ -39,15 +40,18 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Neues Ziel")),
+      appBar: AppBar(title: Text(l10n.newGoal)),
       body: FutureBuilder<List<CategoryData>>(
         future: widget.dbService.getAllCategories(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
           final categories = snapshot.data!;
-
           return Padding(
             padding: const EdgeInsets.all(16),
             child: Form(
@@ -56,7 +60,7 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
                 children: [
                   DropdownButtonFormField<int>(
                     value: _selectedCategoryId,
-                    decoration: const InputDecoration(labelText: "Kategorie"),
+                    decoration: InputDecoration(labelText: l10n.category),
                     items: categories.map((cat) {
                       return DropdownMenuItem(
                         value: cat.id,
@@ -75,7 +79,7 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
                       FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,1}')),
                     ],
                     enabled: _selectedCategoryId == null,
-                    decoration: const InputDecoration(labelText: "Ziel-BMI"),
+                    decoration: InputDecoration(labelText: l10n.targetBmi),
                     onChanged: (val) {
                       if (val.trim().isNotEmpty) {
                         setState(() => _selectedCategoryId = null);
@@ -85,7 +89,7 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: _saveGoal,
-                    child: const Text("Ziel speichern"),
+                    child: Text(l10n.saveGoal),
                   ),
                 ],
               ),
@@ -97,21 +101,22 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
   }
 
   Future<void> _saveGoal() async {
+    final l10n = AppLocalizations.of(context)!;
     final bmi = double.tryParse(_bmiController.text.trim());
 
     if (_selectedCategoryId == null && bmi == null) {
-      _showError("Bitte entweder Kategorie oder Ziel-BMI angeben.");
+      _showError(l10n.errorProvideCategoryOrBmi);
       return;
     }
 
     if (_lastEntry != null) {
       if (_selectedCategoryId != null && _selectedCategoryId == _lastEntry!.categoryId) {
-        _showError("Du befindest dich bereits in dieser Kategorie.");
+        _showError(l10n.errorAlreadyInCategory);
         return;
       }
 
       if (bmi != null && bmi.toStringAsFixed(1) == _lastEntry!.value.toStringAsFixed(1)) {
-        _showError("Dein aktueller BMI entspricht bereits dem Ziel.");
+        _showError(l10n.errorAlreadyAtTargetBmi);
         return;
       }
     }
@@ -134,7 +139,7 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
     });
 
     if (duplicateExists) {
-      _showError("Ein gleiches unerreichtes Ziel existiert bereits.");
+      _showError(l10n.errorDuplicateGoal);
       return;
     }
 

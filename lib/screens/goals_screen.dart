@@ -4,6 +4,7 @@ import '../models/GoalModel.dart';
 import 'categories_screen.dart';
 import 'goal_form_screen.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_localizations.dart';
 
 class GoalsScreen extends StatefulWidget {
   final DbService dbService;
@@ -32,21 +33,18 @@ class _GoalsScreenState extends State<GoalsScreen> {
 
         if (!aAchieved && bAchieved) return -1;
         if (aAchieved && !bAchieved) return 1;
-
         if (!aAchieved && !bAchieved) return 0;
 
-        // Both achieved – compare by most recent achievement date (descending)
         final aDate = DateTime.parse(
             a.achievements.map((ach) => ach.achievementDate).reduce((a, b) => a.compareTo(b) > 0 ? a : b));
         final bDate = DateTime.parse(
             b.achievements.map((ach) => ach.achievementDate).reduce((a, b) => a.compareTo(b) > 0 ? a : b));
 
-        return bDate.compareTo(aDate); // descending
+        return bDate.compareTo(aDate);
       });
 
       return goals;
     });
-
   }
 
   Future<void> _navigateToAddGoal() async {
@@ -63,37 +61,39 @@ class _GoalsScreenState extends State<GoalsScreen> {
     setState(() {});
   }
 
-  Future<void> _confirmDelete(BuildContext context, int goalId) async {
-    final confirmed = await showDialog<bool>(
+  Future<bool?> _confirmDelete(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    return await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Ziel löschen"),
-        content: const Text("Möchtest du dieses Ziel wirklich löschen?"),
+        title: Text(l10n.deleteGoalTitle),
+        content: Text(l10n.deleteGoalConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text("Abbrechen"),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text("Löschen", style: TextStyle(color: Colors.red)),
+            child: Text(
+              l10n.delete,
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
     );
-
-    if (confirmed == true) {
-      await widget.dbService.deleteGoal(goalId);
-      _loadGoals();
-      setState(() {});
-    }
   }
+
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Ziele"),
+        title: Text(l10n.goalsTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),
@@ -120,7 +120,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
 
           final goals = snapshot.data!;
           if (goals.isEmpty) {
-            return const Center(child: Text("Keine Ziele vorhanden."));
+            return Center(child: Text(l10n.noGoalsAvailable));
           }
 
           return ListView.builder(
@@ -130,7 +130,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
               final hasCategory = g.category != null;
               final isAchieved = g.achievements.isNotEmpty;
               final dateText = g.achievementDate != null
-                  ? 'Erreicht am: ${DateFormat("dd.MM.yyy").format(DateTime.parse(g.achievementDate!.toIso8601String()))}'
+                  ? l10n.achievedOn(DateFormat("dd.MM.yyyy").format(DateTime.parse(g.achievementDate!.toIso8601String())))
                   : null;
 
               return Dismissible(
@@ -143,30 +143,21 @@ class _GoalsScreenState extends State<GoalsScreen> {
                   child: const Icon(Icons.delete, color: Colors.white),
                 ),
                 confirmDismiss: (_) async {
-                  return await showDialog<bool>(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text("Ziel löschen"),
-                      content: const Text("Möchtest du dieses Ziel wirklich löschen?"),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: const Text("Abbrechen"),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: const Text("Löschen", style: TextStyle(color: Colors.red)),
-                        ),
-                      ],
-                    ),
-                  );
+                  final confirmed = await _confirmDelete(context);
+                  if (confirmed == true) {
+                    await widget.dbService.deleteGoal(g.goal.id);
+                    _loadGoals();
+                    setState(() {});
+                    return true;
+                  }
+                  return false;
                 },
                 onDismissed: (_) async {
                   await widget.dbService.deleteGoal(g.goal.id);
                   goals.removeAt(index);
                   setState(() {});
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Ziel gelöscht.")),
+                    SnackBar(content: Text(l10n.goalDeleted)),
                   );
                 },
                 child: Card(
@@ -178,13 +169,9 @@ class _GoalsScreenState extends State<GoalsScreen> {
                       color: isAchieved ? Colors.green : Colors.grey,
                     ),
                     title: hasCategory
-                        ? Text("Kategorie: ${g.category!.name}")
-                        : Text("Ziel-BMI: ${g.goal.targetBmi?.toStringAsFixed(1)}"),
+                        ? Text(l10n.categoryLabel(g.category!.name))
+                        : Text(l10n.bmiGoalLabel(g.goal.targetBmi!.toStringAsFixed(1))),
                     subtitle: dateText != null ? Text(dateText) : null,
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => _confirmDelete(context, g.goal.id),
-                    ),
                   ),
                 ),
               );

@@ -1,32 +1,80 @@
+import 'package:bmi_manager/main.dart';
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
 import '../services/db_service.dart';
+import '../l10n/app_localizations.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   final DbService dbService;
 
   const SettingsScreen({super.key, required this.dbService});
 
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  late String _selectedLang;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _selectedLang = Localizations.localeOf(context).languageCode;
+  }
+
+  void _changeLanguage(String langCode) {
+    setState(() => _selectedLang = langCode);
+
+    BmiApp.setLocale(context, Locale(langCode));
+  }
+
   void _logout(BuildContext context) {
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => LoginScreen(dbService: dbService)),
-          (Route<dynamic> route) => false,
+      MaterialPageRoute(builder: (_) => LoginScreen(dbService: widget.dbService)),
+          (route) => false,
     );
+  }
+
+  String _getLanguageLabel(BuildContext context, Locale locale) {
+    final l10n = AppLocalizations.of(context)!;
+
+    switch (locale.languageCode) {
+      case 'de':
+        return l10n.languageGerman;
+      case 'en':
+      default:
+        return l10n.languageEnglish;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Einstellungen')),
+      appBar: AppBar(title: Text(l10n.settingsTitle)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            DropdownButton<String>(
+              value: _selectedLang,
+              onChanged: (value) {
+                if (value != null) _changeLanguage(value);
+              },
+              items: AppLocalizations.supportedLocales.map((locale) {
+                return DropdownMenuItem(
+                  value: locale.languageCode,
+                  child: Text(_getLanguageLabel(context, locale)),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: () => _logout(context),
               icon: const Icon(Icons.logout),
-              label: const Text("Abmelden"),
+              label: Text(l10n.logoutButton),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,
               ),

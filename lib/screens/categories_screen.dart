@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'category_detail_screen.dart';
 import '../services/db_service.dart';
 import '../database/app_database.dart';
+import '../l10n/app_localizations.dart';
 
 class CategoriesScreen extends StatelessWidget {
   final DbService dbService;
@@ -12,13 +13,22 @@ class CategoriesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("BMI Kategorien")),
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.bmiCategories),
+      ),
       body: FutureBuilder<List<CategoryData>>(
         future: dbService.getAllCategories(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
           final categories = snapshot.data!;
-          if (categories.isEmpty) return const Center(child: Text("Keine Kategorien gefunden."));
+          if (categories.isEmpty) {
+            return Center(
+              child: Text(AppLocalizations.of(context)!.noCategoriesFound),
+            );
+          }
 
           return ListView.builder(
             itemCount: categories.length,
@@ -26,7 +36,9 @@ class CategoriesScreen extends StatelessWidget {
               final cat = categories[index];
               return ListTile(
                 title: Text(cat.name),
-                subtitle: Text("BMI: ${cat.from} – ${cat.to}"),
+                subtitle: Text(
+                  AppLocalizations.of(context)!.bmiRange(cat.from, cat.to),
+                ),
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(

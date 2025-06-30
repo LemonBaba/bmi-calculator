@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/db_service.dart';
+import '../l10n/app_localizations.dart';
 
 class RegisterScreen extends StatefulWidget {
   final DbService dbService;
@@ -15,6 +16,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
 
   Future<void> _register() async {
+    final l10n = AppLocalizations.of(context)!;
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
@@ -22,7 +24,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (exists) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Benutzer existiert bereits.")),
+        SnackBar(content: Text(l10n.userAlreadyExists)),
       );
       return;
     }
@@ -31,35 +33,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Registrierung erfolgreich.")),
+      SnackBar(content: Text(l10n.registrationSuccess)),
     );
     Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Registrierung")),
+      appBar: AppBar(title: Text(l10n.registrationTitle)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             TextField(
               controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Username'),
+              decoration: InputDecoration(labelText: l10n.usernameLabel),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10.0),
-              child: TextField(
-                controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Passwort'),
-                obscureText: true,
-              ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _passwordController,
+              decoration: InputDecoration(labelText: l10n.passwordLabel),
+              obscureText: true,
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _register,
-              child: const Text("Registrieren"),
+              child: Text(l10n.registerButton),
             ),
           ],
         ),

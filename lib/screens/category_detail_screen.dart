@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class CategoryDetailScreen extends StatelessWidget {
   final String name;
@@ -12,7 +13,8 @@ class CategoryDetailScreen extends StatelessWidget {
       appBar: AppBar(title: Text(name)),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Text("Kategorie: $name\nBMI-Bereich: $range\n\nDiese Kategorie beschreibt typische Gesundheitsrisiken entsprechend dem BMI-Wert.",
+        child: Text(
+          AppLocalizations.of(context)!.categoryDetail(name, range),
           style: const TextStyle(fontSize: 16),
         ),
       ),

@@ -30,8 +30,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: ^2.5.3
+  flutter_localizations:
+    sdk: flutter
   intl: ^0.20.2
+  shared_preferences: ^2.5.3
   drift: ^2.27.0
   path: ^1.9.1
   path_provider: ^2.1.5
@@ -52,6 +54,7 @@ dev_dependencies:
 
 
 flutter:
+  generate: true
   uses-material-design: true
   assets:
     - assets/animations/fireworks.json

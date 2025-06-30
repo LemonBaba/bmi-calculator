@@ -4,6 +4,7 @@ import '../services/db_service.dart';
 import '../database/app_database.dart';
 import 'history_screen.dart';
 import 'goals_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   final DbService dbService;
@@ -17,7 +18,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
-
   late final List<Widget> _screens;
 
   @override
@@ -32,6 +32,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -40,18 +42,18 @@ class _HomeScreenState extends State<HomeScreen> {
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: "Verlauf",
+            icon: const Icon(Icons.history),
+            label: l10n.navHistory,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.flag),
-            label: "Ziele",
+            icon: const Icon(Icons.flag),
+            label: l10n.navGoals,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: "Einstellungen",
+            icon: const Icon(Icons.settings),
+            label: l10n.navSettings,
           ),
         ],
       ),
