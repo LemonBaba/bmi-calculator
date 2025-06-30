@@ -12,6 +12,9 @@ This is a Flutter BMI calculator school project. That should meet the following 
 - Create user
 - Select user
 
+install dependencies
+flutter pub get
+
 generate app icon
 flutter pub run flutter_launcher_icons:main
 
