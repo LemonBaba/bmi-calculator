@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'category_detail_screen.dart';
 import '../services/db_service.dart';
 import '../database/app_database.dart';
 
@@ -26,6 +27,15 @@ class CategoriesScreen extends StatelessWidget {
               return ListTile(
                 title: Text(cat.name),
                 subtitle: Text("BMI: ${cat.from} – ${cat.to}"),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CategoryDetailScreen(
+                      name: cat.name,
+                      range: "${cat.from} – ${cat.to}",
+                    ),
+                  ),
+                ),
               );
             },
           );
