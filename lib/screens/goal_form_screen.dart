@@ -16,7 +16,6 @@ class GoalFormScreen extends StatefulWidget {
 class _GoalFormScreenState extends State<GoalFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _bmiController = TextEditingController();
-  final _noteController = TextEditingController();
 
   int? _selectedCategoryId;
   BmiEntryData? _lastEntry;
@@ -34,7 +33,6 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
   @override
   void dispose() {
     _bmiController.dispose();
-    _noteController.dispose();
     super.dispose();
   }
 
@@ -102,8 +100,8 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
 
   void _saveGoal() async {
     final bmi = double.tryParse(_bmiController.text.trim());
-    final note = _noteController.text.trim().isEmpty ? null : _noteController.text.trim();
 
+    // Input Validation
     if (_selectedCategoryId == null && bmi == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Bitte entweder Kategorie oder Ziel-BMI angeben.")),
@@ -111,8 +109,10 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
       return;
     }
 
+    // Check if goal is already current state
     if (_lastEntry != null) {
-      if (_selectedCategoryId != null && _selectedCategoryId == _lastEntry!.categoryId) {
+      if (_selectedCategoryId != null &&
+          _selectedCategoryId == _lastEntry!.categoryId) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Du befindest dich bereits in dieser Kategorie.")),
         );
@@ -128,13 +128,36 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
       }
     }
 
+    // Check for duplicate goals
+    final existingGoals = await widget.dbService.getGoalsForUser(widget.userId);
+    final alreadyExists = existingGoals.any((goal) {
+      if (goal.goal.entryId != null) return false; // Already achieved, ignore
+
+      final isDuplicateBmi = bmi != null &&
+          goal.goal.targetBmi != null &&
+          bmi.toStringAsFixed(1) == goal.goal.targetBmi!.toStringAsFixed(1);
+
+      final isDuplicateCategory = _selectedCategoryId != null &&
+          goal.goal.targetCategory != null &&
+          _selectedCategoryId == goal.goal.targetCategory;
+
+      return isDuplicateBmi || isDuplicateCategory;
+    });
+
+    if (alreadyExists) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Ein gleiches Ziel existiert bereits.")),
+      );
+      return;
+    }
+
     await widget.dbService.insertGoal(
       userId: widget.userId,
       targetBmi: bmi,
       targetCategoryId: _selectedCategoryId,
-      note: note,
     );
 
     if (mounted) Navigator.pop(context);
   }
+
 }

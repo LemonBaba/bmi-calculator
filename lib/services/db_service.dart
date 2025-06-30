@@ -115,7 +115,6 @@ class DbService {
     required int userId,
     double? targetBmi,
     int? targetCategoryId,
-    String? note,
   }) {
     return db.into(db.goal).insert(GoalCompanion(
       userId: Value(userId),
