@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/db_service.dart';
 import '../models/GoalModel.dart';
+import 'categories_screen.dart';
 import 'goal_form_screen.dart';
 
 class GoalsScreen extends StatefulWidget {
@@ -77,7 +78,20 @@ class _GoalsScreenState extends State<GoalsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Ziele")),
+      appBar: AppBar(
+        title: const Text("Ziele"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => CategoriesScreen(dbService: widget.dbService, userId: widget.userId)),
+              );
+            },
+          ),
+        ],
+      ),
       body: FutureBuilder<List<GoalModel>>(
         future: _goalFuture,
         builder: (context, snapshot) {

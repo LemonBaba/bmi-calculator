@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'achievement_failure_screen.dart';
 import '../database/app_database.dart';
 import '../services/db_service.dart';
+import 'categories_screen.dart';
 
 class InputScreen extends StatefulWidget {
   final DbService dbService;
@@ -79,7 +80,20 @@ class _InputScreenState extends State<InputScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Neue Messung")),
+      appBar: AppBar(
+        title: const Text("Neue Messung"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => CategoriesScreen(dbService: widget.dbService, userId: widget.userId)),
+              );
+            },
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

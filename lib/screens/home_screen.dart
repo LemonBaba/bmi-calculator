@@ -27,7 +27,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _screens = [
       InputScreen(dbService: widget.dbService, userId: widget.user.id),
       HistoryScreen(dbService: widget.dbService, userId: widget.user.id),
-      CategoriesScreen(dbService: widget.dbService, userId: widget.user.id),
       GoalsScreen(dbService: widget.dbService, userId: widget.user.id),
     ];
   }
@@ -50,10 +49,6 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.history),
             label: "Verlauf",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.category),
-            label: "Kategorien",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.flag),
