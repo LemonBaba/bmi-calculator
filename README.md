@@ -12,6 +12,8 @@ This is a Flutter BMI calculator school project. That should meet the following 
 - Create user
 - Select user
 
+generate app icon
+flutter pub run flutter_launcher_icons:main
 
 wenn etwas an datenbank struktur geändert wird:
 ´´dart run build_runner build --delete-conflicting-outputs´´
