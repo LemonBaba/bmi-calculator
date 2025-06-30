@@ -34,7 +34,6 @@ class Goal extends Table {
   IntColumn get userId => integer().references(User, #id)();
   RealColumn get targetBmi => real().nullable()();
   IntColumn get targetCategory => integer().nullable().references(Category, #id)();
-  TextColumn get note => text().nullable()();
   IntColumn get entryId => integer().nullable().references(BmiEntry, #id, onDelete: KeyAction.setNull)();
 }
 

@@ -159,7 +159,6 @@ class _GoalsScreenState extends State<GoalsScreen> {
                     title: hasCategory
                         ? Text("Kategorie: ${g.category!.name}")
                         : Text("Ziel-BMI: ${g.goal.targetBmi?.toStringAsFixed(1)}"),
-                    subtitle: g.goal.note != null ? Text(g.goal.note!) : null,
                     trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
                       onPressed: () => _confirmDelete(context, g.goal.id),

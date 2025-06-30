@@ -58,26 +58,32 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             TextField(
               controller: _emailController,
-              decoration: const InputDecoration(labelText: 'E-Mail'),
+              decoration: const InputDecoration(labelText: 'Username'),
             ),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Passwort'),
-              obscureText: true,
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: TextField(
+                controller: _passwordController,
+                decoration: const InputDecoration(labelText: 'Passwort'),
+                obscureText: true,
+              ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _login,
               child: const Text("Login"),
             ),
-            TextButton(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => RegisterScreen(dbService: widget.dbService),
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: TextButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => RegisterScreen(dbService: widget.dbService),
+                  ),
                 ),
+                child: const Text("Noch kein Konto? Registrieren"),
               ),
-              child: const Text("Noch kein Konto? Registrieren"),
             ),
             Expanded(
               child: Lottie.asset(

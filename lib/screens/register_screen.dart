@@ -46,12 +46,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
           children: [
             TextField(
               controller: _emailController,
-              decoration: const InputDecoration(labelText: 'E-Mail'),
+              decoration: const InputDecoration(labelText: 'Username'),
             ),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Passwort'),
-              obscureText: true,
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: TextField(
+                controller: _passwordController,
+                decoration: const InputDecoration(labelText: 'Passwort'),
+                obscureText: true,
+              ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(

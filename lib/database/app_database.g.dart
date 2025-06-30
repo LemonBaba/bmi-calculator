@@ -1047,15 +1047,6 @@ class $GoalTable extends Goal with TableInfo<$GoalTable, GoalData> {
       'REFERENCES category (id)',
     ),
   );
-  static const VerificationMeta _noteMeta = const VerificationMeta('note');
-  @override
-  late final GeneratedColumn<String> note = GeneratedColumn<String>(
-    'note',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
   static const VerificationMeta _entryIdMeta = const VerificationMeta(
     'entryId',
   );
@@ -1076,7 +1067,6 @@ class $GoalTable extends Goal with TableInfo<$GoalTable, GoalData> {
     userId,
     targetBmi,
     targetCategory,
-    note,
     entryId,
   ];
   @override
@@ -1117,12 +1107,6 @@ class $GoalTable extends Goal with TableInfo<$GoalTable, GoalData> {
         ),
       );
     }
-    if (data.containsKey('note')) {
-      context.handle(
-        _noteMeta,
-        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
-      );
-    }
     if (data.containsKey('entry_id')) {
       context.handle(
         _entryIdMeta,
@@ -1154,10 +1138,6 @@ class $GoalTable extends Goal with TableInfo<$GoalTable, GoalData> {
         DriftSqlType.int,
         data['${effectivePrefix}target_category'],
       ),
-      note: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}note'],
-      ),
       entryId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}entry_id'],
@@ -1176,14 +1156,12 @@ class GoalData extends DataClass implements Insertable<GoalData> {
   final int userId;
   final double? targetBmi;
   final int? targetCategory;
-  final String? note;
   final int? entryId;
   const GoalData({
     required this.id,
     required this.userId,
     this.targetBmi,
     this.targetCategory,
-    this.note,
     this.entryId,
   });
   @override
@@ -1196,9 +1174,6 @@ class GoalData extends DataClass implements Insertable<GoalData> {
     }
     if (!nullToAbsent || targetCategory != null) {
       map['target_category'] = Variable<int>(targetCategory);
-    }
-    if (!nullToAbsent || note != null) {
-      map['note'] = Variable<String>(note);
     }
     if (!nullToAbsent || entryId != null) {
       map['entry_id'] = Variable<int>(entryId);
@@ -1216,7 +1191,6 @@ class GoalData extends DataClass implements Insertable<GoalData> {
       targetCategory: targetCategory == null && nullToAbsent
           ? const Value.absent()
           : Value(targetCategory),
-      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
       entryId: entryId == null && nullToAbsent
           ? const Value.absent()
           : Value(entryId),
@@ -1233,7 +1207,6 @@ class GoalData extends DataClass implements Insertable<GoalData> {
       userId: serializer.fromJson<int>(json['userId']),
       targetBmi: serializer.fromJson<double?>(json['targetBmi']),
       targetCategory: serializer.fromJson<int?>(json['targetCategory']),
-      note: serializer.fromJson<String?>(json['note']),
       entryId: serializer.fromJson<int?>(json['entryId']),
     );
   }
@@ -1245,7 +1218,6 @@ class GoalData extends DataClass implements Insertable<GoalData> {
       'userId': serializer.toJson<int>(userId),
       'targetBmi': serializer.toJson<double?>(targetBmi),
       'targetCategory': serializer.toJson<int?>(targetCategory),
-      'note': serializer.toJson<String?>(note),
       'entryId': serializer.toJson<int?>(entryId),
     };
   }
@@ -1255,7 +1227,6 @@ class GoalData extends DataClass implements Insertable<GoalData> {
     int? userId,
     Value<double?> targetBmi = const Value.absent(),
     Value<int?> targetCategory = const Value.absent(),
-    Value<String?> note = const Value.absent(),
     Value<int?> entryId = const Value.absent(),
   }) => GoalData(
     id: id ?? this.id,
@@ -1264,7 +1235,6 @@ class GoalData extends DataClass implements Insertable<GoalData> {
     targetCategory: targetCategory.present
         ? targetCategory.value
         : this.targetCategory,
-    note: note.present ? note.value : this.note,
     entryId: entryId.present ? entryId.value : this.entryId,
   );
   GoalData copyWithCompanion(GoalCompanion data) {
@@ -1275,7 +1245,6 @@ class GoalData extends DataClass implements Insertable<GoalData> {
       targetCategory: data.targetCategory.present
           ? data.targetCategory.value
           : this.targetCategory,
-      note: data.note.present ? data.note.value : this.note,
       entryId: data.entryId.present ? data.entryId.value : this.entryId,
     );
   }
@@ -1287,7 +1256,6 @@ class GoalData extends DataClass implements Insertable<GoalData> {
           ..write('userId: $userId, ')
           ..write('targetBmi: $targetBmi, ')
           ..write('targetCategory: $targetCategory, ')
-          ..write('note: $note, ')
           ..write('entryId: $entryId')
           ..write(')'))
         .toString();
@@ -1295,7 +1263,7 @@ class GoalData extends DataClass implements Insertable<GoalData> {
 
   @override
   int get hashCode =>
-      Object.hash(id, userId, targetBmi, targetCategory, note, entryId);
+      Object.hash(id, userId, targetBmi, targetCategory, entryId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1304,7 +1272,6 @@ class GoalData extends DataClass implements Insertable<GoalData> {
           other.userId == this.userId &&
           other.targetBmi == this.targetBmi &&
           other.targetCategory == this.targetCategory &&
-          other.note == this.note &&
           other.entryId == this.entryId);
 }
 
@@ -1313,14 +1280,12 @@ class GoalCompanion extends UpdateCompanion<GoalData> {
   final Value<int> userId;
   final Value<double?> targetBmi;
   final Value<int?> targetCategory;
-  final Value<String?> note;
   final Value<int?> entryId;
   const GoalCompanion({
     this.id = const Value.absent(),
     this.userId = const Value.absent(),
     this.targetBmi = const Value.absent(),
     this.targetCategory = const Value.absent(),
-    this.note = const Value.absent(),
     this.entryId = const Value.absent(),
   });
   GoalCompanion.insert({
@@ -1328,7 +1293,6 @@ class GoalCompanion extends UpdateCompanion<GoalData> {
     required int userId,
     this.targetBmi = const Value.absent(),
     this.targetCategory = const Value.absent(),
-    this.note = const Value.absent(),
     this.entryId = const Value.absent(),
   }) : userId = Value(userId);
   static Insertable<GoalData> custom({
@@ -1336,7 +1300,6 @@ class GoalCompanion extends UpdateCompanion<GoalData> {
     Expression<int>? userId,
     Expression<double>? targetBmi,
     Expression<int>? targetCategory,
-    Expression<String>? note,
     Expression<int>? entryId,
   }) {
     return RawValuesInsertable({
@@ -1344,7 +1307,6 @@ class GoalCompanion extends UpdateCompanion<GoalData> {
       if (userId != null) 'user_id': userId,
       if (targetBmi != null) 'target_bmi': targetBmi,
       if (targetCategory != null) 'target_category': targetCategory,
-      if (note != null) 'note': note,
       if (entryId != null) 'entry_id': entryId,
     });
   }
@@ -1354,7 +1316,6 @@ class GoalCompanion extends UpdateCompanion<GoalData> {
     Value<int>? userId,
     Value<double?>? targetBmi,
     Value<int?>? targetCategory,
-    Value<String?>? note,
     Value<int?>? entryId,
   }) {
     return GoalCompanion(
@@ -1362,7 +1323,6 @@ class GoalCompanion extends UpdateCompanion<GoalData> {
       userId: userId ?? this.userId,
       targetBmi: targetBmi ?? this.targetBmi,
       targetCategory: targetCategory ?? this.targetCategory,
-      note: note ?? this.note,
       entryId: entryId ?? this.entryId,
     );
   }
@@ -1382,9 +1342,6 @@ class GoalCompanion extends UpdateCompanion<GoalData> {
     if (targetCategory.present) {
       map['target_category'] = Variable<int>(targetCategory.value);
     }
-    if (note.present) {
-      map['note'] = Variable<String>(note.value);
-    }
     if (entryId.present) {
       map['entry_id'] = Variable<int>(entryId.value);
     }
@@ -1398,7 +1355,6 @@ class GoalCompanion extends UpdateCompanion<GoalData> {
           ..write('userId: $userId, ')
           ..write('targetBmi: $targetBmi, ')
           ..write('targetCategory: $targetCategory, ')
-          ..write('note: $note, ')
           ..write('entryId: $entryId')
           ..write(')'))
         .toString();
@@ -2650,7 +2606,6 @@ typedef $$GoalTableCreateCompanionBuilder =
       required int userId,
       Value<double?> targetBmi,
       Value<int?> targetCategory,
-      Value<String?> note,
       Value<int?> entryId,
     });
 typedef $$GoalTableUpdateCompanionBuilder =
@@ -2659,7 +2614,6 @@ typedef $$GoalTableUpdateCompanionBuilder =
       Value<int> userId,
       Value<double?> targetBmi,
       Value<int?> targetCategory,
-      Value<String?> note,
       Value<int?> entryId,
     });
 
@@ -2736,11 +2690,6 @@ class $$GoalTableFilterComposer extends Composer<_$AppDatabase, $GoalTable> {
 
   ColumnFilters<double> get targetBmi => $composableBuilder(
     column: $table.targetBmi,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get note => $composableBuilder(
-    column: $table.note,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2832,11 +2781,6 @@ class $$GoalTableOrderingComposer extends Composer<_$AppDatabase, $GoalTable> {
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get note => $composableBuilder(
-    column: $table.note,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   $$UserTableOrderingComposer get userId {
     final $$UserTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -2921,9 +2865,6 @@ class $$GoalTableAnnotationComposer
 
   GeneratedColumn<double> get targetBmi =>
       $composableBuilder(column: $table.targetBmi, builder: (column) => column);
-
-  GeneratedColumn<String> get note =>
-      $composableBuilder(column: $table.note, builder: (column) => column);
 
   $$UserTableAnnotationComposer get userId {
     final $$UserTableAnnotationComposer composer = $composerBuilder(
@@ -3031,14 +2972,12 @@ class $$GoalTableTableManager
                 Value<int> userId = const Value.absent(),
                 Value<double?> targetBmi = const Value.absent(),
                 Value<int?> targetCategory = const Value.absent(),
-                Value<String?> note = const Value.absent(),
                 Value<int?> entryId = const Value.absent(),
               }) => GoalCompanion(
                 id: id,
                 userId: userId,
                 targetBmi: targetBmi,
                 targetCategory: targetCategory,
-                note: note,
                 entryId: entryId,
               ),
           createCompanionCallback:
@@ -3047,14 +2986,12 @@ class $$GoalTableTableManager
                 required int userId,
                 Value<double?> targetBmi = const Value.absent(),
                 Value<int?> targetCategory = const Value.absent(),
-                Value<String?> note = const Value.absent(),
                 Value<int?> entryId = const Value.absent(),
               }) => GoalCompanion.insert(
                 id: id,
                 userId: userId,
                 targetBmi: targetBmi,
                 targetCategory: targetCategory,
-                note: note,
                 entryId: entryId,
               ),
           withReferenceMapper: (p0) => p0

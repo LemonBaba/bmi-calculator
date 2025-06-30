@@ -3,6 +3,7 @@ import 'achievement_failure_screen.dart';
 import '../database/app_database.dart';
 import '../services/db_service.dart';
 import 'categories_screen.dart';
+import 'package:flutter/services.dart';
 
 class InputScreen extends StatefulWidget {
   final DbService dbService;
@@ -98,10 +99,27 @@ class _InputScreenState extends State<InputScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            TextField(controller: _weightController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Gewicht (kg)')),
-            TextField(controller: _heightController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Größe (cm)')),
-            const SizedBox(height: 20),
-            ElevatedButton(onPressed: _calculateAndSave, child: const Text("Berechnen & Speichern")),
+            TextField(
+                controller: _weightController,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                ],
+                decoration: const InputDecoration(labelText: 'Gewicht (kg)')),
+            Padding(
+                padding: const EdgeInsets.only(top: 10.0),
+                child: TextField(
+                    controller: _heightController,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                    ],
+                    decoration: const InputDecoration(labelText: 'Größe (cm)')),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 20.0),
+              child: ElevatedButton(onPressed: _calculateAndSave, child: const Text("Berechnen & Speichern")),
+            ),
             if (_result != null) ...[
               const SizedBox(height: 20),
               Text(_result!, textAlign: TextAlign.center, style: const TextStyle(fontSize: 18))

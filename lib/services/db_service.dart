@@ -121,7 +121,6 @@ class DbService {
       userId: Value(userId),
       targetBmi: Value(targetBmi),
       targetCategory: Value(targetCategoryId),
-      note: Value(note),
     ));
   }
 

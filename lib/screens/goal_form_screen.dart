@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/db_service.dart';
 import '../database/app_database.dart';
+import 'package:flutter/services.dart';
 
 class GoalFormScreen extends StatefulWidget {
   final DbService dbService;
@@ -66,22 +67,24 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
                         ? null
                         : (value) => setState(() => _selectedCategoryId = value),
                   ),
-                  TextFormField(
-                    controller: _bmiController,
-                    keyboardType: TextInputType.number,
-                    enabled: _selectedCategoryId == null,
-                    decoration: const InputDecoration(labelText: "Ziel-BMI"),
-                    onChanged: (val) {
-                      setState(() {
-                        if (val.trim().isNotEmpty) {
-                          _selectedCategoryId = null;
-                        }
-                      });
-                    },
-                  ),
-                  TextFormField(
-                    controller: _noteController,
-                    decoration: const InputDecoration(labelText: "Notiz (optional)"),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: TextFormField(
+                      controller: _bmiController,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                      ],
+                      enabled: _selectedCategoryId == null,
+                      decoration: const InputDecoration(labelText: "Ziel-BMI"),
+                      onChanged: (val) {
+                        setState(() {
+                          if (val.trim().isNotEmpty) {
+                            _selectedCategoryId = null;
+                          }
+                        });
+                      },
+                    ),
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
