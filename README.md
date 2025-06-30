@@ -15,6 +15,9 @@ This is a Flutter BMI calculator school project. That should meet the following 
 install dependencies
 flutter pub get
 
+run
+flutter run
+
 generate app icon
 flutter pub run flutter_launcher_icons:main
 
