@@ -124,20 +124,40 @@ class DbService {
   }
 
   Future<List<GoalModel>> getGoalsForUser(int userId) async {
-    final query = db.select(db.goal).join([
+    // Fetch all goals with categories
+    final goalQuery = db.select(db.goal).join([
       leftOuterJoin(db.category, db.category.id.equalsExp(db.goal.targetCategory))
     ])
       ..where(db.goal.userId.equals(userId));
 
-    final rows = await query.get();
+    final goalRows = await goalQuery.get();
 
-    return rows.map((row) {
-      return GoalModel(
-        row.readTable(db.goal),
-        row.readTableOrNull(db.category),
-      );
+    // Fetch all achievements for the user's goals
+    final achievementQuery = db.select(db.goalAchievement).join([
+      innerJoin(db.goal, db.goal.id.equalsExp(db.goalAchievement.goalId))
+    ])
+      ..where(db.goal.userId.equals(userId));
+
+    final achievementRows = await achievementQuery.get();
+
+    // Group achievements by goalId
+    final Map<int, List<GoalAchievementData>> achievementsByGoalId = {};
+
+    for (final row in achievementRows) {
+      final achievement = row.readTable(db.goalAchievement);
+      achievementsByGoalId.putIfAbsent(achievement.goalId, () => []).add(achievement);
+    }
+
+    // Build GoalModel list
+    return goalRows.map((row) {
+      final goal = row.readTable(db.goal);
+      final category = row.readTableOrNull(db.category);
+      final achievements = achievementsByGoalId[goal.id] ?? [];
+
+      return GoalModel(goal, category, achievements);
     }).toList();
   }
+
 
   Future<List<GoalData>> getUserGoals(int userId) {
     return (db.select(db.goal)..where((g) => g.userId.equals(userId))).get();
@@ -148,13 +168,12 @@ class DbService {
   }
 
   Future<void> markGoalAsAchieved(int goalId, int entryId) async {
-    await (db.update(db.goal)
-      ..where((tbl) => tbl.id.equals(goalId)))
-        .write(
-      GoalCompanion(
+    await db.into(db.goalAchievement).insert(
+      GoalAchievementCompanion(
+        goalId: Value(goalId),
         entryId: Value(entryId),
+        achievementDate: Value(DateTime.now().toIso8601String()),
       ),
     );
-
   }
 }

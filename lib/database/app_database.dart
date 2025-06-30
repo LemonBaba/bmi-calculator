@@ -34,10 +34,20 @@ class Goal extends Table {
   IntColumn get userId => integer().references(User, #id)();
   RealColumn get targetBmi => real().nullable()();
   IntColumn get targetCategory => integer().nullable().references(Category, #id)();
-  IntColumn get entryId => integer().nullable().references(BmiEntry, #id, onDelete: KeyAction.setNull)();
 }
 
-@DriftDatabase(tables: [User, BmiEntry, Goal, Category])
+class GoalAchievement extends Table {
+  IntColumn get goalId => integer().references(Goal, #id, onDelete: KeyAction.cascade)();
+  IntColumn get entryId => integer().references(BmiEntry, #id, onDelete: KeyAction.cascade)();
+  TextColumn get achievementDate => text()();
+
+  @override
+  Set<Column> get primaryKey => {goalId, entryId};
+}
+
+
+
+@DriftDatabase(tables: [User, BmiEntry, Goal, Category, GoalAchievement])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 

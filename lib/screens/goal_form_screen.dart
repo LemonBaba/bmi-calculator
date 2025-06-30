@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../services/db_service.dart';
 import '../database/app_database.dart';
-import 'package:flutter/services.dart';
 
 class GoalFormScreen extends StatefulWidget {
   final DbService dbService;
@@ -23,11 +23,12 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
   @override
   void initState() {
     super.initState();
-    widget.dbService.getLatestEntry(widget.userId).then((entry) {
-      setState(() {
-        _lastEntry = entry;
-      });
-    });
+    _loadLastEntry();
+  }
+
+  void _loadLastEntry() async {
+    final entry = await widget.dbService.getLatestEntry(widget.userId);
+    setState(() => _lastEntry = entry);
   }
 
   @override
@@ -44,6 +45,7 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
         future: widget.dbService.getAllCategories(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+
           final categories = snapshot.data!;
 
           return Padding(
@@ -65,30 +67,26 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
                         ? null
                         : (value) => setState(() => _selectedCategoryId = value),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: TextFormField(
-                      controller: _bmiController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-                      ],
-                      enabled: _selectedCategoryId == null,
-                      decoration: const InputDecoration(labelText: "Ziel-BMI"),
-                      onChanged: (val) {
-                        setState(() {
-                          if (val.trim().isNotEmpty) {
-                            _selectedCategoryId = null;
-                          }
-                        });
-                      },
-                    ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: _bmiController,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,1}')),
+                    ],
+                    enabled: _selectedCategoryId == null,
+                    decoration: const InputDecoration(labelText: "Ziel-BMI"),
+                    onChanged: (val) {
+                      if (val.trim().isNotEmpty) {
+                        setState(() => _selectedCategoryId = null);
+                      }
+                    },
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: _saveGoal,
                     child: const Text("Ziel speichern"),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -98,56 +96,45 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
     );
   }
 
-  void _saveGoal() async {
+  Future<void> _saveGoal() async {
     final bmi = double.tryParse(_bmiController.text.trim());
 
-    // Input Validation
     if (_selectedCategoryId == null && bmi == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Bitte entweder Kategorie oder Ziel-BMI angeben.")),
-      );
+      _showError("Bitte entweder Kategorie oder Ziel-BMI angeben.");
       return;
     }
 
-    // Check if goal is already current state
     if (_lastEntry != null) {
-      if (_selectedCategoryId != null &&
-          _selectedCategoryId == _lastEntry!.categoryId) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Du befindest dich bereits in dieser Kategorie.")),
-        );
+      if (_selectedCategoryId != null && _selectedCategoryId == _lastEntry!.categoryId) {
+        _showError("Du befindest dich bereits in dieser Kategorie.");
         return;
       }
 
-      if (bmi != null &&
-          bmi.toStringAsFixed(1) == _lastEntry!.value.toStringAsFixed(1)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Dein aktueller BMI entspricht bereits dem Ziel.")),
-        );
+      if (bmi != null && bmi.toStringAsFixed(1) == _lastEntry!.value.toStringAsFixed(1)) {
+        _showError("Dein aktueller BMI entspricht bereits dem Ziel.");
         return;
       }
     }
 
-    // Check for duplicate goals
     final existingGoals = await widget.dbService.getGoalsForUser(widget.userId);
-    final alreadyExists = existingGoals.any((goal) {
-      if (goal.goal.entryId != null) return false; // Already achieved, ignore
+    final duplicateExists = existingGoals.any((goal) {
+      if (goal.achievements.isNotEmpty) return false;
 
-      final isDuplicateBmi = bmi != null &&
+      final sameBmi = bmi != null &&
           goal.goal.targetBmi != null &&
-          bmi.toStringAsFixed(1) == goal.goal.targetBmi!.toStringAsFixed(1);
+          bmi.toStringAsFixed(1) == goal.goal.targetBmi!.toStringAsFixed(1) &&
+          goal.achievements.isEmpty;
 
-      final isDuplicateCategory = _selectedCategoryId != null &&
+      final sameCat = _selectedCategoryId != null &&
           goal.goal.targetCategory != null &&
-          _selectedCategoryId == goal.goal.targetCategory;
+          _selectedCategoryId == goal.goal.targetCategory &&
+          goal.achievements.isEmpty;
 
-      return isDuplicateBmi || isDuplicateCategory;
+      return sameBmi || sameCat;
     });
 
-    if (alreadyExists) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Ein gleiches Ziel existiert bereits.")),
-      );
+    if (duplicateExists) {
+      _showError("Ein gleiches unerreichtes Ziel existiert bereits.");
       return;
     }
 
@@ -160,4 +147,9 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
     if (mounted) Navigator.pop(context);
   }
 
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
 }

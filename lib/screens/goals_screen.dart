@@ -23,11 +23,11 @@ class _GoalsScreenState extends State<GoalsScreen> {
     _loadGoals();
   }
 
-  void _loadGoals() async {
+  void _loadGoals() {
     _goalFuture = widget.dbService.getGoalsForUser(widget.userId).then((goals) {
       goals.sort((a, b) {
-        final aAchieved = a.goal.entryId != null;
-        final bAchieved = b.goal.entryId != null;
+        final aAchieved = a.achievements.isNotEmpty;
+        final bAchieved = b.achievements.isNotEmpty;
         if (aAchieved == bAchieved) return 0;
         return aAchieved ? 1 : -1;
       });
@@ -86,7 +86,12 @@ class _GoalsScreenState extends State<GoalsScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => CategoriesScreen(dbService: widget.dbService, userId: widget.userId)),
+                MaterialPageRoute(
+                  builder: (_) => CategoriesScreen(
+                    dbService: widget.dbService,
+                    userId: widget.userId,
+                  ),
+                ),
               );
             },
           ),
@@ -109,6 +114,10 @@ class _GoalsScreenState extends State<GoalsScreen> {
             itemBuilder: (context, index) {
               final g = goals[index];
               final hasCategory = g.category != null;
+              final isAchieved = g.achievements.isNotEmpty;
+              final dateText = g.achievementDate != null
+                  ? 'Erreicht am: ${g.achievementDate!.toLocal().toString().split(' ').first}'
+                  : null;
 
               return Dismissible(
                 key: Key(g.goal.id.toString()),
@@ -140,10 +149,8 @@ class _GoalsScreenState extends State<GoalsScreen> {
                 },
                 onDismissed: (_) async {
                   await widget.dbService.deleteGoal(g.goal.id);
-
                   goals.removeAt(index);
                   setState(() {});
-
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text("Ziel gelöscht.")),
                   );
@@ -154,11 +161,12 @@ class _GoalsScreenState extends State<GoalsScreen> {
                   child: ListTile(
                     leading: Icon(
                       Icons.flag,
-                      color: g.goal.entryId != null ? Colors.green : Colors.grey,
+                      color: isAchieved ? Colors.green : Colors.grey,
                     ),
                     title: hasCategory
                         ? Text("Kategorie: ${g.category!.name}")
                         : Text("Ziel-BMI: ${g.goal.targetBmi?.toStringAsFixed(1)}"),
+                    subtitle: dateText != null ? Text(dateText) : null,
                     trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
                       onPressed: () => _confirmDelete(context, g.goal.id),

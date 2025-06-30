@@ -52,7 +52,6 @@ class _InputScreenState extends State<InputScreen> {
 
     // Collect all matching, unachieved goals
     final matchedGoals = allGoals.where((goal) {
-      if (goal.goal.entryId != null) return false; // Already achieved
 
       final bmiMatch = goal.goal.targetBmi != null &&
           entry.value.toStringAsFixed(1) == goal.goal.targetBmi!.toStringAsFixed(1);
@@ -60,7 +59,9 @@ class _InputScreenState extends State<InputScreen> {
       final catMatch = goal.goal.targetCategory != null &&
           entry.categoryId == goal.goal.targetCategory;
 
-      return bmiMatch || catMatch;
+      final notAchieved = goal.achievements.isEmpty;
+
+      return (bmiMatch || catMatch) && notAchieved;
     }).toList();
 
     // Mark all matched goals as achieved

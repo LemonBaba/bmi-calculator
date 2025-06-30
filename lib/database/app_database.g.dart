@@ -1047,28 +1047,8 @@ class $GoalTable extends Goal with TableInfo<$GoalTable, GoalData> {
       'REFERENCES category (id)',
     ),
   );
-  static const VerificationMeta _entryIdMeta = const VerificationMeta(
-    'entryId',
-  );
   @override
-  late final GeneratedColumn<int> entryId = GeneratedColumn<int>(
-    'entry_id',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES bmi_entry (id) ON DELETE SET NULL',
-    ),
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    userId,
-    targetBmi,
-    targetCategory,
-    entryId,
-  ];
+  List<GeneratedColumn> get $columns => [id, userId, targetBmi, targetCategory];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1107,12 +1087,6 @@ class $GoalTable extends Goal with TableInfo<$GoalTable, GoalData> {
         ),
       );
     }
-    if (data.containsKey('entry_id')) {
-      context.handle(
-        _entryIdMeta,
-        entryId.isAcceptableOrUnknown(data['entry_id']!, _entryIdMeta),
-      );
-    }
     return context;
   }
 
@@ -1138,10 +1112,6 @@ class $GoalTable extends Goal with TableInfo<$GoalTable, GoalData> {
         DriftSqlType.int,
         data['${effectivePrefix}target_category'],
       ),
-      entryId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}entry_id'],
-      ),
     );
   }
 
@@ -1156,13 +1126,11 @@ class GoalData extends DataClass implements Insertable<GoalData> {
   final int userId;
   final double? targetBmi;
   final int? targetCategory;
-  final int? entryId;
   const GoalData({
     required this.id,
     required this.userId,
     this.targetBmi,
     this.targetCategory,
-    this.entryId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1174,9 +1142,6 @@ class GoalData extends DataClass implements Insertable<GoalData> {
     }
     if (!nullToAbsent || targetCategory != null) {
       map['target_category'] = Variable<int>(targetCategory);
-    }
-    if (!nullToAbsent || entryId != null) {
-      map['entry_id'] = Variable<int>(entryId);
     }
     return map;
   }
@@ -1191,9 +1156,6 @@ class GoalData extends DataClass implements Insertable<GoalData> {
       targetCategory: targetCategory == null && nullToAbsent
           ? const Value.absent()
           : Value(targetCategory),
-      entryId: entryId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(entryId),
     );
   }
 
@@ -1207,7 +1169,6 @@ class GoalData extends DataClass implements Insertable<GoalData> {
       userId: serializer.fromJson<int>(json['userId']),
       targetBmi: serializer.fromJson<double?>(json['targetBmi']),
       targetCategory: serializer.fromJson<int?>(json['targetCategory']),
-      entryId: serializer.fromJson<int?>(json['entryId']),
     );
   }
   @override
@@ -1218,7 +1179,6 @@ class GoalData extends DataClass implements Insertable<GoalData> {
       'userId': serializer.toJson<int>(userId),
       'targetBmi': serializer.toJson<double?>(targetBmi),
       'targetCategory': serializer.toJson<int?>(targetCategory),
-      'entryId': serializer.toJson<int?>(entryId),
     };
   }
 
@@ -1227,7 +1187,6 @@ class GoalData extends DataClass implements Insertable<GoalData> {
     int? userId,
     Value<double?> targetBmi = const Value.absent(),
     Value<int?> targetCategory = const Value.absent(),
-    Value<int?> entryId = const Value.absent(),
   }) => GoalData(
     id: id ?? this.id,
     userId: userId ?? this.userId,
@@ -1235,7 +1194,6 @@ class GoalData extends DataClass implements Insertable<GoalData> {
     targetCategory: targetCategory.present
         ? targetCategory.value
         : this.targetCategory,
-    entryId: entryId.present ? entryId.value : this.entryId,
   );
   GoalData copyWithCompanion(GoalCompanion data) {
     return GoalData(
@@ -1245,7 +1203,6 @@ class GoalData extends DataClass implements Insertable<GoalData> {
       targetCategory: data.targetCategory.present
           ? data.targetCategory.value
           : this.targetCategory,
-      entryId: data.entryId.present ? data.entryId.value : this.entryId,
     );
   }
 
@@ -1255,15 +1212,13 @@ class GoalData extends DataClass implements Insertable<GoalData> {
           ..write('id: $id, ')
           ..write('userId: $userId, ')
           ..write('targetBmi: $targetBmi, ')
-          ..write('targetCategory: $targetCategory, ')
-          ..write('entryId: $entryId')
+          ..write('targetCategory: $targetCategory')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, userId, targetBmi, targetCategory, entryId);
+  int get hashCode => Object.hash(id, userId, targetBmi, targetCategory);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1271,8 +1226,7 @@ class GoalData extends DataClass implements Insertable<GoalData> {
           other.id == this.id &&
           other.userId == this.userId &&
           other.targetBmi == this.targetBmi &&
-          other.targetCategory == this.targetCategory &&
-          other.entryId == this.entryId);
+          other.targetCategory == this.targetCategory);
 }
 
 class GoalCompanion extends UpdateCompanion<GoalData> {
@@ -1280,34 +1234,29 @@ class GoalCompanion extends UpdateCompanion<GoalData> {
   final Value<int> userId;
   final Value<double?> targetBmi;
   final Value<int?> targetCategory;
-  final Value<int?> entryId;
   const GoalCompanion({
     this.id = const Value.absent(),
     this.userId = const Value.absent(),
     this.targetBmi = const Value.absent(),
     this.targetCategory = const Value.absent(),
-    this.entryId = const Value.absent(),
   });
   GoalCompanion.insert({
     this.id = const Value.absent(),
     required int userId,
     this.targetBmi = const Value.absent(),
     this.targetCategory = const Value.absent(),
-    this.entryId = const Value.absent(),
   }) : userId = Value(userId);
   static Insertable<GoalData> custom({
     Expression<int>? id,
     Expression<int>? userId,
     Expression<double>? targetBmi,
     Expression<int>? targetCategory,
-    Expression<int>? entryId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (userId != null) 'user_id': userId,
       if (targetBmi != null) 'target_bmi': targetBmi,
       if (targetCategory != null) 'target_category': targetCategory,
-      if (entryId != null) 'entry_id': entryId,
     });
   }
 
@@ -1316,14 +1265,12 @@ class GoalCompanion extends UpdateCompanion<GoalData> {
     Value<int>? userId,
     Value<double?>? targetBmi,
     Value<int?>? targetCategory,
-    Value<int?>? entryId,
   }) {
     return GoalCompanion(
       id: id ?? this.id,
       userId: userId ?? this.userId,
       targetBmi: targetBmi ?? this.targetBmi,
       targetCategory: targetCategory ?? this.targetCategory,
-      entryId: entryId ?? this.entryId,
     );
   }
 
@@ -1342,9 +1289,6 @@ class GoalCompanion extends UpdateCompanion<GoalData> {
     if (targetCategory.present) {
       map['target_category'] = Variable<int>(targetCategory.value);
     }
-    if (entryId.present) {
-      map['entry_id'] = Variable<int>(entryId.value);
-    }
     return map;
   }
 
@@ -1354,8 +1298,286 @@ class GoalCompanion extends UpdateCompanion<GoalData> {
           ..write('id: $id, ')
           ..write('userId: $userId, ')
           ..write('targetBmi: $targetBmi, ')
-          ..write('targetCategory: $targetCategory, ')
-          ..write('entryId: $entryId')
+          ..write('targetCategory: $targetCategory')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $GoalAchievementTable extends GoalAchievement
+    with TableInfo<$GoalAchievementTable, GoalAchievementData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GoalAchievementTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _goalIdMeta = const VerificationMeta('goalId');
+  @override
+  late final GeneratedColumn<int> goalId = GeneratedColumn<int>(
+    'goal_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES goal (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _entryIdMeta = const VerificationMeta(
+    'entryId',
+  );
+  @override
+  late final GeneratedColumn<int> entryId = GeneratedColumn<int>(
+    'entry_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES bmi_entry (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _achievementDateMeta = const VerificationMeta(
+    'achievementDate',
+  );
+  @override
+  late final GeneratedColumn<String> achievementDate = GeneratedColumn<String>(
+    'achievement_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [goalId, entryId, achievementDate];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'goal_achievement';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<GoalAchievementData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('goal_id')) {
+      context.handle(
+        _goalIdMeta,
+        goalId.isAcceptableOrUnknown(data['goal_id']!, _goalIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_goalIdMeta);
+    }
+    if (data.containsKey('entry_id')) {
+      context.handle(
+        _entryIdMeta,
+        entryId.isAcceptableOrUnknown(data['entry_id']!, _entryIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entryIdMeta);
+    }
+    if (data.containsKey('achievement_date')) {
+      context.handle(
+        _achievementDateMeta,
+        achievementDate.isAcceptableOrUnknown(
+          data['achievement_date']!,
+          _achievementDateMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_achievementDateMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {goalId, entryId};
+  @override
+  GoalAchievementData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GoalAchievementData(
+      goalId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}goal_id'],
+      )!,
+      entryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}entry_id'],
+      )!,
+      achievementDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}achievement_date'],
+      )!,
+    );
+  }
+
+  @override
+  $GoalAchievementTable createAlias(String alias) {
+    return $GoalAchievementTable(attachedDatabase, alias);
+  }
+}
+
+class GoalAchievementData extends DataClass
+    implements Insertable<GoalAchievementData> {
+  final int goalId;
+  final int entryId;
+  final String achievementDate;
+  const GoalAchievementData({
+    required this.goalId,
+    required this.entryId,
+    required this.achievementDate,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['goal_id'] = Variable<int>(goalId);
+    map['entry_id'] = Variable<int>(entryId);
+    map['achievement_date'] = Variable<String>(achievementDate);
+    return map;
+  }
+
+  GoalAchievementCompanion toCompanion(bool nullToAbsent) {
+    return GoalAchievementCompanion(
+      goalId: Value(goalId),
+      entryId: Value(entryId),
+      achievementDate: Value(achievementDate),
+    );
+  }
+
+  factory GoalAchievementData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GoalAchievementData(
+      goalId: serializer.fromJson<int>(json['goalId']),
+      entryId: serializer.fromJson<int>(json['entryId']),
+      achievementDate: serializer.fromJson<String>(json['achievementDate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'goalId': serializer.toJson<int>(goalId),
+      'entryId': serializer.toJson<int>(entryId),
+      'achievementDate': serializer.toJson<String>(achievementDate),
+    };
+  }
+
+  GoalAchievementData copyWith({
+    int? goalId,
+    int? entryId,
+    String? achievementDate,
+  }) => GoalAchievementData(
+    goalId: goalId ?? this.goalId,
+    entryId: entryId ?? this.entryId,
+    achievementDate: achievementDate ?? this.achievementDate,
+  );
+  GoalAchievementData copyWithCompanion(GoalAchievementCompanion data) {
+    return GoalAchievementData(
+      goalId: data.goalId.present ? data.goalId.value : this.goalId,
+      entryId: data.entryId.present ? data.entryId.value : this.entryId,
+      achievementDate: data.achievementDate.present
+          ? data.achievementDate.value
+          : this.achievementDate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GoalAchievementData(')
+          ..write('goalId: $goalId, ')
+          ..write('entryId: $entryId, ')
+          ..write('achievementDate: $achievementDate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(goalId, entryId, achievementDate);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GoalAchievementData &&
+          other.goalId == this.goalId &&
+          other.entryId == this.entryId &&
+          other.achievementDate == this.achievementDate);
+}
+
+class GoalAchievementCompanion extends UpdateCompanion<GoalAchievementData> {
+  final Value<int> goalId;
+  final Value<int> entryId;
+  final Value<String> achievementDate;
+  final Value<int> rowid;
+  const GoalAchievementCompanion({
+    this.goalId = const Value.absent(),
+    this.entryId = const Value.absent(),
+    this.achievementDate = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  GoalAchievementCompanion.insert({
+    required int goalId,
+    required int entryId,
+    required String achievementDate,
+    this.rowid = const Value.absent(),
+  }) : goalId = Value(goalId),
+       entryId = Value(entryId),
+       achievementDate = Value(achievementDate);
+  static Insertable<GoalAchievementData> custom({
+    Expression<int>? goalId,
+    Expression<int>? entryId,
+    Expression<String>? achievementDate,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (goalId != null) 'goal_id': goalId,
+      if (entryId != null) 'entry_id': entryId,
+      if (achievementDate != null) 'achievement_date': achievementDate,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  GoalAchievementCompanion copyWith({
+    Value<int>? goalId,
+    Value<int>? entryId,
+    Value<String>? achievementDate,
+    Value<int>? rowid,
+  }) {
+    return GoalAchievementCompanion(
+      goalId: goalId ?? this.goalId,
+      entryId: entryId ?? this.entryId,
+      achievementDate: achievementDate ?? this.achievementDate,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (goalId.present) {
+      map['goal_id'] = Variable<int>(goalId.value);
+    }
+    if (entryId.present) {
+      map['entry_id'] = Variable<int>(entryId.value);
+    }
+    if (achievementDate.present) {
+      map['achievement_date'] = Variable<String>(achievementDate.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GoalAchievementCompanion(')
+          ..write('goalId: $goalId, ')
+          ..write('entryId: $entryId, ')
+          ..write('achievementDate: $achievementDate, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -1368,6 +1590,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $CategoryTable category = $CategoryTable(this);
   late final $BmiEntryTable bmiEntry = $BmiEntryTable(this);
   late final $GoalTable goal = $GoalTable(this);
+  late final $GoalAchievementTable goalAchievement = $GoalAchievementTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1377,15 +1602,23 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     category,
     bmiEntry,
     goal,
+    goalAchievement,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
     WritePropagation(
       on: TableUpdateQuery.onTableName(
+        'goal',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('goal_achievement', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
         'bmi_entry',
         limitUpdateKind: UpdateKind.delete,
       ),
-      result: [TableUpdate('goal', kind: UpdateKind.update)],
+      result: [TableUpdate('goal_achievement', kind: UpdateKind.delete)],
     ),
   ]);
 }
@@ -2136,20 +2369,21 @@ final class $$BmiEntryTableReferences
     );
   }
 
-  static MultiTypedResultKey<$GoalTable, List<GoalData>> _goalRefsTable(
-    _$AppDatabase db,
-  ) => MultiTypedResultKey.fromTable(
-    db.goal,
-    aliasName: $_aliasNameGenerator(db.bmiEntry.id, db.goal.entryId),
+  static MultiTypedResultKey<$GoalAchievementTable, List<GoalAchievementData>>
+  _goalAchievementRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.goalAchievement,
+    aliasName: $_aliasNameGenerator(db.bmiEntry.id, db.goalAchievement.entryId),
   );
 
-  $$GoalTableProcessedTableManager get goalRefs {
-    final manager = $$GoalTableTableManager(
+  $$GoalAchievementTableProcessedTableManager get goalAchievementRefs {
+    final manager = $$GoalAchievementTableTableManager(
       $_db,
-      $_db.goal,
+      $_db.goalAchievement,
     ).filter((f) => f.entryId.id.sqlEquals($_itemColumn<int>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_goalRefsTable($_db));
+    final cache = $_typedResult.readTableOrNull(
+      _goalAchievementRefsTable($_db),
+    );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -2236,22 +2470,22 @@ class $$BmiEntryTableFilterComposer
     return composer;
   }
 
-  Expression<bool> goalRefs(
-    Expression<bool> Function($$GoalTableFilterComposer f) f,
+  Expression<bool> goalAchievementRefs(
+    Expression<bool> Function($$GoalAchievementTableFilterComposer f) f,
   ) {
-    final $$GoalTableFilterComposer composer = $composerBuilder(
+    final $$GoalAchievementTableFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.goal,
+      referencedTable: $db.goalAchievement,
       getReferencedColumn: (t) => t.entryId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$GoalTableFilterComposer(
+          }) => $$GoalAchievementTableFilterComposer(
             $db: $db,
-            $table: $db.goal,
+            $table: $db.goalAchievement,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2413,22 +2647,22 @@ class $$BmiEntryTableAnnotationComposer
     return composer;
   }
 
-  Expression<T> goalRefs<T extends Object>(
-    Expression<T> Function($$GoalTableAnnotationComposer a) f,
+  Expression<T> goalAchievementRefs<T extends Object>(
+    Expression<T> Function($$GoalAchievementTableAnnotationComposer a) f,
   ) {
-    final $$GoalTableAnnotationComposer composer = $composerBuilder(
+    final $$GoalAchievementTableAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.goal,
+      referencedTable: $db.goalAchievement,
       getReferencedColumn: (t) => t.entryId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$GoalTableAnnotationComposer(
+          }) => $$GoalAchievementTableAnnotationComposer(
             $db: $db,
-            $table: $db.goal,
+            $table: $db.goalAchievement,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2452,7 +2686,11 @@ class $$BmiEntryTableTableManager
           $$BmiEntryTableUpdateCompanionBuilder,
           (BmiEntryData, $$BmiEntryTableReferences),
           BmiEntryData,
-          PrefetchHooks Function({bool userId, bool categoryId, bool goalRefs})
+          PrefetchHooks Function({
+            bool userId,
+            bool categoryId,
+            bool goalAchievementRefs,
+          })
         > {
   $$BmiEntryTableTableManager(_$AppDatabase db, $BmiEntryTable table)
     : super(
@@ -2510,10 +2748,16 @@ class $$BmiEntryTableTableManager
               )
               .toList(),
           prefetchHooksCallback:
-              ({userId = false, categoryId = false, goalRefs = false}) {
+              ({
+                userId = false,
+                categoryId = false,
+                goalAchievementRefs = false,
+              }) {
                 return PrefetchHooks(
                   db: db,
-                  explicitlyWatchedTables: [if (goalRefs) db.goal],
+                  explicitlyWatchedTables: [
+                    if (goalAchievementRefs) db.goalAchievement,
+                  ],
                   addJoins:
                       <
                         T extends TableManagerState<
@@ -2561,17 +2805,21 @@ class $$BmiEntryTableTableManager
                       },
                   getPrefetchedDataCallback: (items) async {
                     return [
-                      if (goalRefs)
+                      if (goalAchievementRefs)
                         await $_getPrefetchedData<
                           BmiEntryData,
                           $BmiEntryTable,
-                          GoalData
+                          GoalAchievementData
                         >(
                           currentTable: table,
                           referencedTable: $$BmiEntryTableReferences
-                              ._goalRefsTable(db),
+                              ._goalAchievementRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $$BmiEntryTableReferences(db, table, p0).goalRefs,
+                              $$BmiEntryTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).goalAchievementRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.entryId == item.id,
@@ -2598,7 +2846,11 @@ typedef $$BmiEntryTableProcessedTableManager =
       $$BmiEntryTableUpdateCompanionBuilder,
       (BmiEntryData, $$BmiEntryTableReferences),
       BmiEntryData,
-      PrefetchHooks Function({bool userId, bool categoryId, bool goalRefs})
+      PrefetchHooks Function({
+        bool userId,
+        bool categoryId,
+        bool goalAchievementRefs,
+      })
     >;
 typedef $$GoalTableCreateCompanionBuilder =
     GoalCompanion Function({
@@ -2606,7 +2858,6 @@ typedef $$GoalTableCreateCompanionBuilder =
       required int userId,
       Value<double?> targetBmi,
       Value<int?> targetCategory,
-      Value<int?> entryId,
     });
 typedef $$GoalTableUpdateCompanionBuilder =
     GoalCompanion Function({
@@ -2614,7 +2865,6 @@ typedef $$GoalTableUpdateCompanionBuilder =
       Value<int> userId,
       Value<double?> targetBmi,
       Value<int?> targetCategory,
-      Value<int?> entryId,
     });
 
 final class $$GoalTableReferences
@@ -2657,20 +2907,23 @@ final class $$GoalTableReferences
     );
   }
 
-  static $BmiEntryTable _entryIdTable(_$AppDatabase db) => db.bmiEntry
-      .createAlias($_aliasNameGenerator(db.goal.entryId, db.bmiEntry.id));
+  static MultiTypedResultKey<$GoalAchievementTable, List<GoalAchievementData>>
+  _goalAchievementRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.goalAchievement,
+    aliasName: $_aliasNameGenerator(db.goal.id, db.goalAchievement.goalId),
+  );
 
-  $$BmiEntryTableProcessedTableManager? get entryId {
-    final $_column = $_itemColumn<int>('entry_id');
-    if ($_column == null) return null;
-    final manager = $$BmiEntryTableTableManager(
+  $$GoalAchievementTableProcessedTableManager get goalAchievementRefs {
+    final manager = $$GoalAchievementTableTableManager(
       $_db,
-      $_db.bmiEntry,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_entryIdTable($_db));
-    if (item == null) return manager;
+      $_db.goalAchievement,
+    ).filter((f) => f.goalId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _goalAchievementRefsTable($_db),
+    );
     return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
+      manager.$state.copyWith(prefetchedData: cache),
     );
   }
 }
@@ -2739,27 +2992,29 @@ class $$GoalTableFilterComposer extends Composer<_$AppDatabase, $GoalTable> {
     return composer;
   }
 
-  $$BmiEntryTableFilterComposer get entryId {
-    final $$BmiEntryTableFilterComposer composer = $composerBuilder(
+  Expression<bool> goalAchievementRefs(
+    Expression<bool> Function($$GoalAchievementTableFilterComposer f) f,
+  ) {
+    final $$GoalAchievementTableFilterComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.entryId,
-      referencedTable: $db.bmiEntry,
-      getReferencedColumn: (t) => t.id,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.goalAchievement,
+      getReferencedColumn: (t) => t.goalId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$BmiEntryTableFilterComposer(
+          }) => $$GoalAchievementTableFilterComposer(
             $db: $db,
-            $table: $db.bmiEntry,
+            $table: $db.goalAchievement,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
                 $removeJoinBuilderFromRootComposer,
           ),
     );
-    return composer;
+    return f(composer);
   }
 }
 
@@ -2818,29 +3073,6 @@ class $$GoalTableOrderingComposer extends Composer<_$AppDatabase, $GoalTable> {
           }) => $$CategoryTableOrderingComposer(
             $db: $db,
             $table: $db.category,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $$BmiEntryTableOrderingComposer get entryId {
-    final $$BmiEntryTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.entryId,
-      referencedTable: $db.bmiEntry,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$BmiEntryTableOrderingComposer(
-            $db: $db,
-            $table: $db.bmiEntry,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2912,27 +3144,29 @@ class $$GoalTableAnnotationComposer
     return composer;
   }
 
-  $$BmiEntryTableAnnotationComposer get entryId {
-    final $$BmiEntryTableAnnotationComposer composer = $composerBuilder(
+  Expression<T> goalAchievementRefs<T extends Object>(
+    Expression<T> Function($$GoalAchievementTableAnnotationComposer a) f,
+  ) {
+    final $$GoalAchievementTableAnnotationComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.entryId,
-      referencedTable: $db.bmiEntry,
-      getReferencedColumn: (t) => t.id,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.goalAchievement,
+      getReferencedColumn: (t) => t.goalId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$BmiEntryTableAnnotationComposer(
+          }) => $$GoalAchievementTableAnnotationComposer(
             $db: $db,
-            $table: $db.bmiEntry,
+            $table: $db.goalAchievement,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
                 $removeJoinBuilderFromRootComposer,
           ),
     );
-    return composer;
+    return f(composer);
   }
 }
 
@@ -2952,7 +3186,7 @@ class $$GoalTableTableManager
           PrefetchHooks Function({
             bool userId,
             bool targetCategory,
-            bool entryId,
+            bool goalAchievementRefs,
           })
         > {
   $$GoalTableTableManager(_$AppDatabase db, $GoalTable table)
@@ -2972,13 +3206,11 @@ class $$GoalTableTableManager
                 Value<int> userId = const Value.absent(),
                 Value<double?> targetBmi = const Value.absent(),
                 Value<int?> targetCategory = const Value.absent(),
-                Value<int?> entryId = const Value.absent(),
               }) => GoalCompanion(
                 id: id,
                 userId: userId,
                 targetBmi: targetBmi,
                 targetCategory: targetCategory,
-                entryId: entryId,
               ),
           createCompanionCallback:
               ({
@@ -2986,13 +3218,11 @@ class $$GoalTableTableManager
                 required int userId,
                 Value<double?> targetBmi = const Value.absent(),
                 Value<int?> targetCategory = const Value.absent(),
-                Value<int?> entryId = const Value.absent(),
               }) => GoalCompanion.insert(
                 id: id,
                 userId: userId,
                 targetBmi: targetBmi,
                 targetCategory: targetCategory,
-                entryId: entryId,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -3001,10 +3231,16 @@ class $$GoalTableTableManager
               )
               .toList(),
           prefetchHooksCallback:
-              ({userId = false, targetCategory = false, entryId = false}) {
+              ({
+                userId = false,
+                targetCategory = false,
+                goalAchievementRefs = false,
+              }) {
                 return PrefetchHooks(
                   db: db,
-                  explicitlyWatchedTables: [],
+                  explicitlyWatchedTables: [
+                    if (goalAchievementRefs) db.goalAchievement,
+                  ],
                   addJoins:
                       <
                         T extends TableManagerState<
@@ -3047,24 +3283,32 @@ class $$GoalTableTableManager
                                   )
                                   as T;
                         }
-                        if (entryId) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.entryId,
-                                    referencedTable: $$GoalTableReferences
-                                        ._entryIdTable(db),
-                                    referencedColumn: $$GoalTableReferences
-                                        ._entryIdTable(db)
-                                        .id,
-                                  )
-                                  as T;
-                        }
 
                         return state;
                       },
                   getPrefetchedDataCallback: (items) async {
-                    return [];
+                    return [
+                      if (goalAchievementRefs)
+                        await $_getPrefetchedData<
+                          GoalData,
+                          $GoalTable,
+                          GoalAchievementData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GoalTableReferences
+                              ._goalAchievementRefsTable(db),
+                          managerFromTypedResult: (p0) => $$GoalTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).goalAchievementRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.goalId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
                   },
                 );
               },
@@ -3084,7 +3328,396 @@ typedef $$GoalTableProcessedTableManager =
       $$GoalTableUpdateCompanionBuilder,
       (GoalData, $$GoalTableReferences),
       GoalData,
-      PrefetchHooks Function({bool userId, bool targetCategory, bool entryId})
+      PrefetchHooks Function({
+        bool userId,
+        bool targetCategory,
+        bool goalAchievementRefs,
+      })
+    >;
+typedef $$GoalAchievementTableCreateCompanionBuilder =
+    GoalAchievementCompanion Function({
+      required int goalId,
+      required int entryId,
+      required String achievementDate,
+      Value<int> rowid,
+    });
+typedef $$GoalAchievementTableUpdateCompanionBuilder =
+    GoalAchievementCompanion Function({
+      Value<int> goalId,
+      Value<int> entryId,
+      Value<String> achievementDate,
+      Value<int> rowid,
+    });
+
+final class $$GoalAchievementTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $GoalAchievementTable,
+          GoalAchievementData
+        > {
+  $$GoalAchievementTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $GoalTable _goalIdTable(_$AppDatabase db) => db.goal.createAlias(
+    $_aliasNameGenerator(db.goalAchievement.goalId, db.goal.id),
+  );
+
+  $$GoalTableProcessedTableManager get goalId {
+    final $_column = $_itemColumn<int>('goal_id')!;
+
+    final manager = $$GoalTableTableManager(
+      $_db,
+      $_db.goal,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_goalIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $BmiEntryTable _entryIdTable(_$AppDatabase db) =>
+      db.bmiEntry.createAlias(
+        $_aliasNameGenerator(db.goalAchievement.entryId, db.bmiEntry.id),
+      );
+
+  $$BmiEntryTableProcessedTableManager get entryId {
+    final $_column = $_itemColumn<int>('entry_id')!;
+
+    final manager = $$BmiEntryTableTableManager(
+      $_db,
+      $_db.bmiEntry,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_entryIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$GoalAchievementTableFilterComposer
+    extends Composer<_$AppDatabase, $GoalAchievementTable> {
+  $$GoalAchievementTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get achievementDate => $composableBuilder(
+    column: $table.achievementDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$GoalTableFilterComposer get goalId {
+    final $$GoalTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.goalId,
+      referencedTable: $db.goal,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GoalTableFilterComposer(
+            $db: $db,
+            $table: $db.goal,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$BmiEntryTableFilterComposer get entryId {
+    final $$BmiEntryTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.entryId,
+      referencedTable: $db.bmiEntry,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$BmiEntryTableFilterComposer(
+            $db: $db,
+            $table: $db.bmiEntry,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GoalAchievementTableOrderingComposer
+    extends Composer<_$AppDatabase, $GoalAchievementTable> {
+  $$GoalAchievementTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get achievementDate => $composableBuilder(
+    column: $table.achievementDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$GoalTableOrderingComposer get goalId {
+    final $$GoalTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.goalId,
+      referencedTable: $db.goal,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GoalTableOrderingComposer(
+            $db: $db,
+            $table: $db.goal,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$BmiEntryTableOrderingComposer get entryId {
+    final $$BmiEntryTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.entryId,
+      referencedTable: $db.bmiEntry,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$BmiEntryTableOrderingComposer(
+            $db: $db,
+            $table: $db.bmiEntry,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GoalAchievementTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GoalAchievementTable> {
+  $$GoalAchievementTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get achievementDate => $composableBuilder(
+    column: $table.achievementDate,
+    builder: (column) => column,
+  );
+
+  $$GoalTableAnnotationComposer get goalId {
+    final $$GoalTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.goalId,
+      referencedTable: $db.goal,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GoalTableAnnotationComposer(
+            $db: $db,
+            $table: $db.goal,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$BmiEntryTableAnnotationComposer get entryId {
+    final $$BmiEntryTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.entryId,
+      referencedTable: $db.bmiEntry,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$BmiEntryTableAnnotationComposer(
+            $db: $db,
+            $table: $db.bmiEntry,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$GoalAchievementTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $GoalAchievementTable,
+          GoalAchievementData,
+          $$GoalAchievementTableFilterComposer,
+          $$GoalAchievementTableOrderingComposer,
+          $$GoalAchievementTableAnnotationComposer,
+          $$GoalAchievementTableCreateCompanionBuilder,
+          $$GoalAchievementTableUpdateCompanionBuilder,
+          (GoalAchievementData, $$GoalAchievementTableReferences),
+          GoalAchievementData,
+          PrefetchHooks Function({bool goalId, bool entryId})
+        > {
+  $$GoalAchievementTableTableManager(
+    _$AppDatabase db,
+    $GoalAchievementTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GoalAchievementTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GoalAchievementTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GoalAchievementTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> goalId = const Value.absent(),
+                Value<int> entryId = const Value.absent(),
+                Value<String> achievementDate = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GoalAchievementCompanion(
+                goalId: goalId,
+                entryId: entryId,
+                achievementDate: achievementDate,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required int goalId,
+                required int entryId,
+                required String achievementDate,
+                Value<int> rowid = const Value.absent(),
+              }) => GoalAchievementCompanion.insert(
+                goalId: goalId,
+                entryId: entryId,
+                achievementDate: achievementDate,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$GoalAchievementTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({goalId = false, entryId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (goalId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.goalId,
+                                referencedTable:
+                                    $$GoalAchievementTableReferences
+                                        ._goalIdTable(db),
+                                referencedColumn:
+                                    $$GoalAchievementTableReferences
+                                        ._goalIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+                    if (entryId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.entryId,
+                                referencedTable:
+                                    $$GoalAchievementTableReferences
+                                        ._entryIdTable(db),
+                                referencedColumn:
+                                    $$GoalAchievementTableReferences
+                                        ._entryIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$GoalAchievementTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $GoalAchievementTable,
+      GoalAchievementData,
+      $$GoalAchievementTableFilterComposer,
+      $$GoalAchievementTableOrderingComposer,
+      $$GoalAchievementTableAnnotationComposer,
+      $$GoalAchievementTableCreateCompanionBuilder,
+      $$GoalAchievementTableUpdateCompanionBuilder,
+      (GoalAchievementData, $$GoalAchievementTableReferences),
+      GoalAchievementData,
+      PrefetchHooks Function({bool goalId, bool entryId})
     >;
 
 class $AppDatabaseManager {
@@ -3096,4 +3729,6 @@ class $AppDatabaseManager {
   $$BmiEntryTableTableManager get bmiEntry =>
       $$BmiEntryTableTableManager(_db, _db.bmiEntry);
   $$GoalTableTableManager get goal => $$GoalTableTableManager(_db, _db.goal);
+  $$GoalAchievementTableTableManager get goalAchievement =>
+      $$GoalAchievementTableTableManager(_db, _db.goalAchievement);
 }
