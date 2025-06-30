@@ -18,7 +18,6 @@ class InputScreen extends StatefulWidget {
 class _InputScreenState extends State<InputScreen> {
   final _weightController = TextEditingController();
   final _heightController = TextEditingController();
-  String? _result;
 
   @override
   void initState() {
