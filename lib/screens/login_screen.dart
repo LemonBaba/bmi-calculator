@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'register_screen.dart';
 import '../services/db_service.dart';
+import 'package:lottie/lottie.dart';
 
 class LoginScreen extends StatefulWidget {
   final DbService dbService;
@@ -77,7 +78,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               child: const Text("Noch kein Konto? Registrieren"),
-            )
+            ),
+            Expanded(
+              child: Lottie.asset(
+                  'assets/animations/body_scan.json',
+                  height: 200,
+                  fit: BoxFit.contain,
+                )
+              ,)
+
           ],
         ),
       ),
