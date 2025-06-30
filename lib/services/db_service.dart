@@ -50,9 +50,33 @@ class DbService {
     return (await (db.select(db.bmiEntry)..where((e) => e.id.equals(id))).getSingle());
   }
 
-  Future<void> deleteBmiEntry(int entryId) async {
+  Future<void> deleteBmiEntry(int entryId, int userId) async {
     await (db.delete(db.bmiEntry)..where((e) => e.id.equals(entryId))).go();
+
+    // Get the new latest entry after deletion
+    final latest = await getLatestEntry(userId);
+    if (latest == null) return;
+
+    // Get all unachieved goals
+    final goals = await getGoalsForUser(userId);
+
+    for (final g in goals) {
+      final isAchieved = g.achievements.isNotEmpty;
+      if (isAchieved) continue;
+
+      final matchesCategory = g.goal.targetCategory != null &&
+          g.goal.targetCategory == latest.categoryId;
+
+      final matchesBmi = g.goal.targetBmi != null &&
+          g.goal.targetBmi!.toStringAsFixed(1) == latest.value.toStringAsFixed(1);
+
+      // If now fulfilled already delete the unnecessary goal
+      if (matchesCategory || matchesBmi) {
+        await deleteGoal(g.goal.id);
+      }
+    }
   }
+
 
   Future<List<BmiEntryModel>> getBmiEntries(int userId) async {
     final query = db.select(db.bmiEntry).join([

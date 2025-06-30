@@ -95,7 +95,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 ),
                 confirmDismiss: (_) => _confirmDelete(context, e.entry.id),
                 onDismissed: (_) async {
-                  await widget.dbService.deleteBmiEntry(e.entry.id);
+                  await widget.dbService.deleteBmiEntry(e.entry.id, widget.userId);
 
                   setState(() {
                     entries.removeAt(index);
@@ -118,7 +118,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       onPressed: () async {
                         final confirmed = await _confirmDelete(context, e.entry.id);
                         if (confirmed) {
-                          await widget.dbService.deleteBmiEntry(e.entry.id);
+                          await widget.dbService.deleteBmiEntry(e.entry.id, widget.userId);
                           setState(() {
                             entries.removeAt(index);
                           });
