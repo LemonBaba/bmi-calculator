@@ -3,7 +3,9 @@ import 'screens/login_screen.dart';
 import 'services/db_service.dart';
 import 'database/app_database.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await resetDatabase(); // todo remove
   final db = AppDatabase();
   final dbService = DbService(db);
 
