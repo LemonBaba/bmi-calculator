@@ -111,7 +111,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   child: ListTile(
                     title: Text("${e.entry.value.toStringAsFixed(1)} (${e.category.name})"),
                     subtitle: Text(
-                      "Gewicht: ${e.entry.weight} kg, Größe: ${e.entry.height} cm\n${DateFormat.yMd().add_Hm().format(DateTime.parse(e.entry.date))}",
+                      "Gewicht: ${e.entry.weight} kg, Größe: ${e.entry.height} cm\n${DateFormat("dd.MM.yyy").add_Hm().format(DateTime.parse(e.entry.date))}",
                     ),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),

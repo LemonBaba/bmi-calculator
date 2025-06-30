@@ -3,6 +3,7 @@ import '../services/db_service.dart';
 import '../models/GoalModel.dart';
 import 'categories_screen.dart';
 import 'goal_form_screen.dart';
+import 'package:intl/intl.dart';
 
 class GoalsScreen extends StatefulWidget {
   final DbService dbService;
@@ -129,7 +130,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
               final hasCategory = g.category != null;
               final isAchieved = g.achievements.isNotEmpty;
               final dateText = g.achievementDate != null
-                  ? 'Erreicht am: ${g.achievementDate!.toLocal().toString().split(' ').first}'
+                  ? 'Erreicht am: ${DateFormat("dd.MM.yyy").format(DateTime.parse(g.achievementDate!.toIso8601String()))}'
                   : null;
 
               return Dismissible(
