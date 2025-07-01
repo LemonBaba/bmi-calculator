@@ -12,15 +12,15 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
 
   Future<void> _register() async {
     final l10n = AppLocalizations.of(context)!;
-    final email = _emailController.text.trim();
+    final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
 
-    final exists = await widget.dbService.userExists(email);
+    final exists = await widget.dbService.userExists(username);
 
     if (exists) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -29,7 +29,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    await widget.dbService.registerUser(email, password);
+    await widget.dbService.registerUser(username, password);
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -49,7 +49,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: Column(
           children: [
             TextField(
-              controller: _emailController,
+              controller: _usernameController,
               decoration: InputDecoration(labelText: l10n.usernameLabel),
             ),
             const SizedBox(height: 10),

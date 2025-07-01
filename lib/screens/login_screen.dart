@@ -15,15 +15,15 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
 
   Future<void> _login() async {
-    final inputEmail = _emailController.text.trim();
+    final inputUsername = _usernameController.text.trim();
     final inputPassword = _passwordController.text.trim();
 
     try {
-      final user = await widget.dbService.loginUser(inputEmail, inputPassword);
+      final user = await widget.dbService.loginUser(inputUsername, inputPassword);
 
       if (user != null) {
         Navigator.pushReplacement(
@@ -61,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           children: [
             TextField(
-              controller: _emailController,
+              controller: _usernameController,
               decoration: InputDecoration(labelText: l10n.usernameLabel),
             ),
             const SizedBox(height: 10),

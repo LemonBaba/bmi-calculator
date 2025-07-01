@@ -8,7 +8,7 @@ part 'app_database.g.dart';
 
 class User extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get email => text().withLength(min: 1, max: 255).customConstraint('NOT NULL UNIQUE')();
+  TextColumn get username => text().withLength(min: 1, max: 255).customConstraint('NOT NULL UNIQUE')();
   TextColumn get password => text().withLength(min: 1, max: 255).customConstraint('NOT NULL')();
 }
 

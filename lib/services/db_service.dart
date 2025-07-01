@@ -9,24 +9,24 @@ class DbService {
   DbService(this.db);
 
   // USER
-  Future<bool> userExists(String email) async {
-    final query = db.select(db.user)..where((u) => u.email.equals(email));
+  Future<bool> userExists(String username) async {
+    final query = db.select(db.user)..where((u) => u.username.equals(username));
     final user = await query.getSingleOrNull();
     return user != null;
   }
 
-  Future<void> registerUser(String email, String password) async {
+  Future<void> registerUser(String username, String password) async {
     await db.into(db.user).insert(
       UserCompanion(
-        email: Value(email),
+        username: Value(username),
         password: Value(password),
       ),
     );
   }
 
-  Future<UserData?> loginUser(String email, String password) async {
+  Future<UserData?> loginUser(String username, String password) async {
     final query = db.select(db.user)
-      ..where((u) => u.email.equals(email) & u.password.equals(password));
+      ..where((u) => u.username.equals(username) & u.password.equals(password));
     return query.getSingleOrNull();
   }
 

@@ -21,10 +21,12 @@ class $UserTable extends User with TableInfo<$UserTable, UserData> {
       'PRIMARY KEY AUTOINCREMENT',
     ),
   );
-  static const VerificationMeta _emailMeta = const VerificationMeta('email');
+  static const VerificationMeta _usernameMeta = const VerificationMeta(
+    'username',
+  );
   @override
-  late final GeneratedColumn<String> email = GeneratedColumn<String>(
-    'email',
+  late final GeneratedColumn<String> username = GeneratedColumn<String>(
+    'username',
     aliasedName,
     false,
     additionalChecks: GeneratedColumn.checkTextLength(
@@ -52,7 +54,7 @@ class $UserTable extends User with TableInfo<$UserTable, UserData> {
     $customConstraints: 'NOT NULL',
   );
   @override
-  List<GeneratedColumn> get $columns => [id, email, password];
+  List<GeneratedColumn> get $columns => [id, username, password];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -68,13 +70,13 @@ class $UserTable extends User with TableInfo<$UserTable, UserData> {
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('email')) {
+    if (data.containsKey('username')) {
       context.handle(
-        _emailMeta,
-        email.isAcceptableOrUnknown(data['email']!, _emailMeta),
+        _usernameMeta,
+        username.isAcceptableOrUnknown(data['username']!, _usernameMeta),
       );
     } else if (isInserting) {
-      context.missing(_emailMeta);
+      context.missing(_usernameMeta);
     }
     if (data.containsKey('password')) {
       context.handle(
@@ -97,9 +99,9 @@ class $UserTable extends User with TableInfo<$UserTable, UserData> {
         DriftSqlType.int,
         data['${effectivePrefix}id'],
       )!,
-      email: attachedDatabase.typeMapping.read(
+      username: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}email'],
+        data['${effectivePrefix}username'],
       )!,
       password: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -116,18 +118,18 @@ class $UserTable extends User with TableInfo<$UserTable, UserData> {
 
 class UserData extends DataClass implements Insertable<UserData> {
   final int id;
-  final String email;
+  final String username;
   final String password;
   const UserData({
     required this.id,
-    required this.email,
+    required this.username,
     required this.password,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    map['email'] = Variable<String>(email);
+    map['username'] = Variable<String>(username);
     map['password'] = Variable<String>(password);
     return map;
   }
@@ -135,7 +137,7 @@ class UserData extends DataClass implements Insertable<UserData> {
   UserCompanion toCompanion(bool nullToAbsent) {
     return UserCompanion(
       id: Value(id),
-      email: Value(email),
+      username: Value(username),
       password: Value(password),
     );
   }
@@ -147,7 +149,7 @@ class UserData extends DataClass implements Insertable<UserData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return UserData(
       id: serializer.fromJson<int>(json['id']),
-      email: serializer.fromJson<String>(json['email']),
+      username: serializer.fromJson<String>(json['username']),
       password: serializer.fromJson<String>(json['password']),
     );
   }
@@ -156,20 +158,20 @@ class UserData extends DataClass implements Insertable<UserData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'email': serializer.toJson<String>(email),
+      'username': serializer.toJson<String>(username),
       'password': serializer.toJson<String>(password),
     };
   }
 
-  UserData copyWith({int? id, String? email, String? password}) => UserData(
+  UserData copyWith({int? id, String? username, String? password}) => UserData(
     id: id ?? this.id,
-    email: email ?? this.email,
+    username: username ?? this.username,
     password: password ?? this.password,
   );
   UserData copyWithCompanion(UserCompanion data) {
     return UserData(
       id: data.id.present ? data.id.value : this.id,
-      email: data.email.present ? data.email.value : this.email,
+      username: data.username.present ? data.username.value : this.username,
       password: data.password.present ? data.password.value : this.password,
     );
   }
@@ -178,58 +180,58 @@ class UserData extends DataClass implements Insertable<UserData> {
   String toString() {
     return (StringBuffer('UserData(')
           ..write('id: $id, ')
-          ..write('email: $email, ')
+          ..write('username: $username, ')
           ..write('password: $password')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, email, password);
+  int get hashCode => Object.hash(id, username, password);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is UserData &&
           other.id == this.id &&
-          other.email == this.email &&
+          other.username == this.username &&
           other.password == this.password);
 }
 
 class UserCompanion extends UpdateCompanion<UserData> {
   final Value<int> id;
-  final Value<String> email;
+  final Value<String> username;
   final Value<String> password;
   const UserCompanion({
     this.id = const Value.absent(),
-    this.email = const Value.absent(),
+    this.username = const Value.absent(),
     this.password = const Value.absent(),
   });
   UserCompanion.insert({
     this.id = const Value.absent(),
-    required String email,
+    required String username,
     required String password,
-  }) : email = Value(email),
+  }) : username = Value(username),
        password = Value(password);
   static Insertable<UserData> custom({
     Expression<int>? id,
-    Expression<String>? email,
+    Expression<String>? username,
     Expression<String>? password,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (email != null) 'email': email,
+      if (username != null) 'username': username,
       if (password != null) 'password': password,
     });
   }
 
   UserCompanion copyWith({
     Value<int>? id,
-    Value<String>? email,
+    Value<String>? username,
     Value<String>? password,
   }) {
     return UserCompanion(
       id: id ?? this.id,
-      email: email ?? this.email,
+      username: username ?? this.username,
       password: password ?? this.password,
     );
   }
@@ -240,8 +242,8 @@ class UserCompanion extends UpdateCompanion<UserData> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
-    if (email.present) {
-      map['email'] = Variable<String>(email.value);
+    if (username.present) {
+      map['username'] = Variable<String>(username.value);
     }
     if (password.present) {
       map['password'] = Variable<String>(password.value);
@@ -253,7 +255,7 @@ class UserCompanion extends UpdateCompanion<UserData> {
   String toString() {
     return (StringBuffer('UserCompanion(')
           ..write('id: $id, ')
-          ..write('email: $email, ')
+          ..write('username: $username, ')
           ..write('password: $password')
           ..write(')'))
         .toString();
@@ -1626,13 +1628,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 typedef $$UserTableCreateCompanionBuilder =
     UserCompanion Function({
       Value<int> id,
-      required String email,
+      required String username,
       required String password,
     });
 typedef $$UserTableUpdateCompanionBuilder =
     UserCompanion Function({
       Value<int> id,
-      Value<String> email,
+      Value<String> username,
       Value<String> password,
     });
 
@@ -1691,8 +1693,8 @@ class $$UserTableFilterComposer extends Composer<_$AppDatabase, $UserTable> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get email => $composableBuilder(
-    column: $table.email,
+  ColumnFilters<String> get username => $composableBuilder(
+    column: $table.username,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1765,8 +1767,8 @@ class $$UserTableOrderingComposer extends Composer<_$AppDatabase, $UserTable> {
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get email => $composableBuilder(
-    column: $table.email,
+  ColumnOrderings<String> get username => $composableBuilder(
+    column: $table.username,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -1788,8 +1790,8 @@ class $$UserTableAnnotationComposer
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<String> get email =>
-      $composableBuilder(column: $table.email, builder: (column) => column);
+  GeneratedColumn<String> get username =>
+      $composableBuilder(column: $table.username, builder: (column) => column);
 
   GeneratedColumn<String> get password =>
       $composableBuilder(column: $table.password, builder: (column) => column);
@@ -1874,17 +1876,18 @@ class $$UserTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
-                Value<String> email = const Value.absent(),
+                Value<String> username = const Value.absent(),
                 Value<String> password = const Value.absent(),
-              }) => UserCompanion(id: id, email: email, password: password),
+              }) =>
+                  UserCompanion(id: id, username: username, password: password),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
-                required String email,
+                required String username,
                 required String password,
               }) => UserCompanion.insert(
                 id: id,
-                email: email,
+                username: username,
                 password: password,
               ),
           withReferenceMapper: (p0) => p0
