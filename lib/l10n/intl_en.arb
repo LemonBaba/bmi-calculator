@@ -113,6 +113,8 @@
   "bmiCategory_obesity1": "Obesity I",
   "bmiCategory_obesity2": "Obesity II",
   "bmiCategory_obesity3": "Obesity III",
+  "weightError": "Please enter a weight between 20kg and 300kg.",
+  "heightError": "Please enter a height between 100cm and 250cm.",
   "error": "Error: {error}",
   "@error": {
     "description": "Error message shown",

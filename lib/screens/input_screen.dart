@@ -43,12 +43,12 @@ class _InputScreenState extends State<InputScreen> {
     if (weight == null || height == null) return;
 
     if (weight < 20 || weight > 300) {
-      showError('Please enter a weight between 20kg and 300kg.', context);
+      showError(l10n.weightError, context);
       return;
     }
 
     if (height < 100 || height > 250) {
-      showError('Please enter a height between 100cm and 250cm.', context);
+      showError(l10n.heightError, context);
       return;
     }
 

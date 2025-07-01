@@ -299,7 +299,7 @@ class DbService {
       try {
         await markGoalAsAchieved(goal.goal.id, entry.id);
       } catch(e) {
-        debugPrint('Error: ${e}');
+        debugPrint('Error: $e');
         continue;
       }
       actuallyAchieved.add(goal);

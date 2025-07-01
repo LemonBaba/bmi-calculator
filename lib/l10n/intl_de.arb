@@ -113,6 +113,8 @@
   "bmiCategory_obesity1": "Adipositas I",
   "bmiCategory_obesity2": "Adipositas II",
   "bmiCategory_obesity3": "Adipositas III",
+  "weightError": "Bitte gib ein Gewicht zwischen 20kg und 300kg ein.",
+  "heightError": "Bitte gib eine Grösse zwischen 100cm und 250cm ein.",
   "error": "Fehler aufgetreten: {error}",
   "@error": {
     "description": "Error message shown",

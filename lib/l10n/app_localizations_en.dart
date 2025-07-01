@@ -208,6 +208,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bmiCategory_obesity3 => 'Obesity III';
 
   @override
+  String get weightError => 'Please enter a weight between 20kg and 300kg.';
+
+  @override
+  String get heightError => 'Please enter a height between 100cm and 250cm.';
+
+  @override
   String error(Object error) {
     return 'Error: $error';
   }

@@ -458,6 +458,18 @@ abstract class AppLocalizations {
   /// **'Obesity III'**
   String get bmiCategory_obesity3;
 
+  /// No description provided for @weightError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a weight between 20kg and 300kg.'**
+  String get weightError;
+
+  /// No description provided for @heightError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a height between 100cm and 250cm.'**
+  String get heightError;
+
   /// Error message shown
   ///
   /// In en, this message translates to:
