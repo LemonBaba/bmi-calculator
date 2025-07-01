@@ -1,5 +1,6 @@
 {
   "@@locale": "de",
+  "language": "Sprache",
   "congratulations": "Glückwunsch!",
   "goal_bmi_achieved": "BMI-Ziel {goal} erreicht",
   "@goal_bmi_achieved": {
@@ -112,5 +113,4 @@
   "bmiCategory_obesity1": "Adipositas I",
   "bmiCategory_obesity2": "Adipositas II",
   "bmiCategory_obesity3": "Adipositas III"
-
 }

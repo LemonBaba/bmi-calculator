@@ -1,5 +1,6 @@
 {
   "@@locale": "en",
+  "language": "Language",
   "congratulations": "Congratulations!",
   "goal_bmi_achieved": "BMI-Goal {goal} achieved",
   "@goal_bmi_achieved": {

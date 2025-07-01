@@ -62,11 +62,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            DropdownButton<String>(
+            DropdownButtonFormField<String>(
               value: _selectedLang,
               onChanged: (value) {
                 if (value != null) _changeLanguage(value);
               },
+              decoration: InputDecoration(
+                labelText: l10n.language,
+                border: OutlineInputBorder(),
+              ),
               items: AppLocalizations.supportedLocales.map((locale) {
                 return DropdownMenuItem(
                   value: locale.languageCode,
