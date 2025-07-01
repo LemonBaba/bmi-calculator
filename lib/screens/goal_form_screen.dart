@@ -78,7 +78,7 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
                     controller: _bmiController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,1}')),
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d?')),
                     ],
                     enabled: _selectedCategoryId == null,
                     decoration: InputDecoration(labelText: l10n.targetBmi),

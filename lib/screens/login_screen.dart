@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'home_screen.dart';
 import 'register_screen.dart';
 import '../services/db_service.dart';
@@ -62,11 +63,18 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             TextField(
               controller: _usernameController,
+              keyboardType: TextInputType.text,
+              maxLength: 255,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
+              ],
               decoration: InputDecoration(labelText: l10n.usernameLabel),
             ),
             const SizedBox(height: 10),
             TextField(
+              keyboardType: TextInputType.text,
               controller: _passwordController,
+              maxLength: 255,
               decoration: InputDecoration(labelText: l10n.passwordLabel),
               obscureText: true,
             ),

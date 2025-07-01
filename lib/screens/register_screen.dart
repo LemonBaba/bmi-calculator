@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../services/db_service.dart';
 import '../l10n/app_localizations.dart';
 
@@ -50,11 +51,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
           children: [
             TextField(
               controller: _usernameController,
+              keyboardType: TextInputType.text,
+              maxLength: 255,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
+              ],
               decoration: InputDecoration(labelText: l10n.usernameLabel),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: _passwordController,
+              keyboardType: TextInputType.text,
+              maxLength: 255,
               decoration: InputDecoration(labelText: l10n.passwordLabel),
               obscureText: true,
             ),
