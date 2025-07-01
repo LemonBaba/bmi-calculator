@@ -140,7 +140,7 @@ class DbService {
     final result = await query.getSingleOrNull();
 
     if (result == null) {
-      throw StateError("Keine passende Kategorie für BMI $bmi gefunden."); // todo catch in ui
+      throw StateError("Keine passende Kategorie für BMI $bmi gefunden.");
     }
 
     return result;
