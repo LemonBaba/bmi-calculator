@@ -65,6 +65,14 @@ class _LoginScreenState extends State<LoginScreen> {
               controller: _usernameController,
               keyboardType: TextInputType.text,
               maxLength: 255,
+              buildCounter: (
+                  BuildContext context, {
+                    required int currentLength,
+                    required bool isFocused,
+                    required int? maxLength,
+                  }) {
+                return null;
+              },
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
               ],
@@ -75,6 +83,14 @@ class _LoginScreenState extends State<LoginScreen> {
               keyboardType: TextInputType.text,
               controller: _passwordController,
               maxLength: 255,
+              buildCounter: (
+                  BuildContext context, {
+                    required int currentLength,
+                    required bool isFocused,
+                    required int? maxLength,
+                  }) {
+                return null;
+              },
               decoration: InputDecoration(labelText: l10n.passwordLabel),
               obscureText: true,
             ),
