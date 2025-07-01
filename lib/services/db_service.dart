@@ -52,13 +52,25 @@ class DbService {
   }
 
   Future<void> deleteBmiEntry(int entryId, int userId) async {
+    final entryToDelete = await (db.select(db.bmiEntry)
+      ..where((e) => e.id.equals(entryId)))
+        .getSingleOrNull();
     await (db.delete(db.bmiEntry)..where((e) => e.id.equals(entryId))).go();
     await deleteDuplicateUnachievedGoals(userId);
 
-    final lastEntry = await getLatestEntry(userId);
-    if (lastEntry == null) return;
+    if (entryToDelete == null) return;
 
-    createAchievements(lastEntry, userId);
+    final nextEntries = await (db.select(db.bmiEntry)
+      ..where((e) =>
+      e.userId.equals(userId) &
+      e.date.isBiggerThanValue(entryToDelete.date))
+      ..orderBy([(e) => OrderingTerm(expression: e.date)]))
+        .get();
+
+    if (nextEntries.isNotEmpty) {
+      await createAchievements(nextEntries.first, userId);
+    }
+    await deleteUnachievedGoalsMatchingLastEntry(userId);
   }
 
   Future<List<BmiEntryModel>> getBmiEntries(int userId) async {
@@ -231,6 +243,27 @@ class DbService {
       }
     }
   }
+
+  Future<void> deleteUnachievedGoalsMatchingLastEntry(int userId) async {
+    final lastEntry = await getLatestEntry(userId);
+    if (lastEntry == null) return;
+
+    final goals = await getGoalsForUser(userId);
+    final unachievedGoals = goals.where((g) => g.achievements.isEmpty).toList();
+
+    for (final goal in unachievedGoals) {
+      final bmiMatch = goal.goal.targetBmi != null &&
+          lastEntry.value.toStringAsFixed(1) == goal.goal.targetBmi!.toStringAsFixed(1);
+
+      final catMatch = goal.goal.targetCategory != null &&
+          lastEntry.categoryId == goal.goal.targetCategory;
+
+      if (bmiMatch || catMatch) {
+        await deleteGoal(goal.goal.id);
+      }
+    }
+  }
+
 
   Future<void> markGoalAsAchieved(int goalId, int entryId) async {
     // Ensure the goal isn't already achieved

@@ -12,7 +12,7 @@ void main() async {
   final savedLocaleCode = prefs.getString('locale');
   final locale = savedLocaleCode != null ? Locale(savedLocaleCode) : null;
 
-  await resetDatabase(); // todo remove
+  // await resetDatabase();
   final db = AppDatabase();
   final dbService = DbService(db);
 
