@@ -55,7 +55,7 @@ class AchievementScreen extends StatelessWidget {
                       }).toList(),
                       const SizedBox(height: 20),
                       ElevatedButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
                         child: Text(AppLocalizations.of(context)!.back,),
                       ),
                     ],

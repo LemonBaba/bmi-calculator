@@ -9,6 +9,9 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get language => 'Sprache';
+
+  @override
   String get congratulations => 'Glückwunsch!';
 
   @override

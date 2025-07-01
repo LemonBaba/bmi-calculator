@@ -52,22 +52,25 @@ class _InputScreenState extends State<InputScreen> {
       value: bmi,
     );
 
-    _triggerAchievementsCreation(insertedEntry);
-
-    if (mounted) Navigator.pop(context);
+    final isAchievementScreenShown = await _triggerAchievementsCreation(insertedEntry);
+    if((!isAchievementScreenShown) && mounted) {
+      Navigator.pop(context);
+    }
   }
 
-  void _triggerAchievementsCreation(BmiEntryData entry) async {
+  Future<bool> _triggerAchievementsCreation(BmiEntryData entry) async {
     final triggeredGoals = await widget.dbService.createAchievements(entry, widget.userId);
-
-    if (triggeredGoals.isNotEmpty) {
-      Navigator.push(
+    if (triggeredGoals.isNotEmpty && mounted) {
+      await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => AchievementScreen(goals: triggeredGoals),
         ),
       );
+
+      return true;
     }
+    return false;
   }
 
   @override

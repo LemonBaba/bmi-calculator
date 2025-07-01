@@ -6,6 +6,7 @@ import 'input_screen.dart';
 import 'package:intl/intl.dart';
 import '../l10n/app_localization_extension.dart';
 import '../l10n/app_localizations.dart';
+import '../main.dart';
 
 class HistoryScreen extends StatefulWidget {
   final DbService dbService;
@@ -17,7 +18,7 @@ class HistoryScreen extends StatefulWidget {
   State<HistoryScreen> createState() => _HistoryScreenState();
 }
 
-class _HistoryScreenState extends State<HistoryScreen> {
+class _HistoryScreenState extends State<HistoryScreen> with RouteAware {
   late Future<List<BmiEntryModel>> _entriesFuture;
 
   @override
@@ -28,6 +29,25 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   void _loadEntries() {
     _entriesFuture = widget.dbService.getBmiEntries(widget.userId);
+  }
+
+  @override
+  void didPopNext() {
+    // Called when user comes back to this screen
+    _loadEntries();
+    setState(() {});
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
   }
 
   Future<bool> _confirmDelete(BuildContext context, int entryId) async {
@@ -56,14 +76,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Future<void> _navigateToAddBmiEntry() async {
-    await Navigator.push(
+    final result = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => InputScreen(dbService: widget.dbService, userId: widget.userId),
       ),
     );
-    _loadEntries();
-    setState(() {});
+    if (result == true) {
+      _loadEntries();
+      setState(() {});
+    }
   }
 
   @override
@@ -118,9 +140,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 ),
                 confirmDismiss: (_) => _confirmDelete(context, e.entry.id),
                 onDismissed: (_) async {
-                  await widget.dbService.deleteBmiEntry(e.entry.id, widget.userId);
                   setState(() {
                     entries.removeAt(index);
+                  });
+                  await widget.dbService.deleteBmiEntry(e.entry.id, widget.userId);
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _loadEntries();
+                    setState(() {});
                   });
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(l10n.entryDeleted)),
@@ -136,12 +162,37 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           AppLocalizations.of(context)!.localizeCategory(e.category.name)
                       ),
                     ),
-                    subtitle: Text(
-                      l10n.entryDetails(
-                        e.entry.weight.toStringAsFixed(1),
-                        e.entry.height.toStringAsFixed(0),
-                        DateFormat("dd.MM.yyyy").add_Hm().format(DateTime.parse(e.entry.date)),
-                      ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.entryDetails(
+                            e.entry.weight.toStringAsFixed(1),
+                            e.entry.height.toStringAsFixed(0),
+                            DateFormat("dd.MM.yyyy").add_Hm().format(DateTime.parse(e.entry.date)),
+                          ),
+                        ),
+                        if (e.goalName.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: e.goalName.map((desc) {
+                                return Row(
+                                  children: [
+                                    const Icon(Icons.emoji_events, size: 16, color: Colors.amber),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      l10n.goal_bmi_achieved(double.tryParse(desc) != null
+                                          ? desc
+                                          : AppLocalizations.of(context)!.localizeCategory(desc))
+                                    ),
+                                  ],
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ),

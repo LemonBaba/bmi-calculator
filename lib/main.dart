@@ -34,6 +34,7 @@ class BmiApp extends StatefulWidget {
   State<BmiApp> createState() => _BmiAppState();
 }
 
+final RouteObserver<ModalRoute> routeObserver = RouteObserver<ModalRoute>();
 class _BmiAppState extends State<BmiApp> {
   Locale? _locale;
 
@@ -52,6 +53,7 @@ class _BmiAppState extends State<BmiApp> {
     return MaterialApp(
       title: 'BMI Manager',
       debugShowCheckedModeBanner: false,
+      navigatorObservers: [routeObserver],
       locale: _locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,

@@ -61,22 +61,51 @@ class DbService {
   }
 
   Future<List<BmiEntryModel>> getBmiEntries(int userId) async {
-    final query = db.select(db.bmiEntry).join([
+    final entryQuery = db.select(db.bmiEntry).join([
       innerJoin(db.category, db.category.id.equalsExp(db.bmiEntry.categoryId))
     ])
       ..where(db.bmiEntry.userId.equals(userId));
 
-    return query.map((row) {
-      final entry = row.readTable(db.bmiEntry);
+    final entryRows = await entryQuery.get();
+    final entryIds = entryRows.map((row) => row.readTable(db.bmiEntry).id).toList();
+
+    final achievementQuery = db.select(db.goalAchievement).join([
+      innerJoin(db.goal, db.goal.id.equalsExp(db.goalAchievement.goalId)),
+      leftOuterJoin(db.category, db.category.id.equalsExp(db.goal.targetCategory)),
+    ])
+      ..where(db.goalAchievement.entryId.isIn(entryIds));
+
+    final achievementRows = await achievementQuery.get();
+
+    final Map<int, List<String?>> entryIdToGoalDescriptions = {};
+
+    for (final row in achievementRows) {
+      final achievement = row.readTable(db.goalAchievement);
+      final goal = row.readTable(db.goal);
       final category = row.readTableOrNull(db.category);
 
-      if (category == null) {
-        throw StateError("BmiEntry with ID ${entry.id} has no category.");
+      String? description;
+      if (goal.targetCategory != null && category != null) {
+        description = category.name;
+      } else if (goal.targetBmi != null) {
+        description = goal.targetBmi!.toStringAsFixed(1);
       }
 
-      return BmiEntryModel(entry, category);
-    }).get();
+      entryIdToGoalDescriptions
+          .putIfAbsent(achievement.entryId, () => [])
+          .add(description);
+    }
+
+    return entryRows.map((row) {
+      final entry = row.readTable(db.bmiEntry);
+      final category = row.readTable(db.category);
+      final goalDescriptions = entryIdToGoalDescriptions[entry.id] ?? [];
+      return BmiEntryModel(entry, category, goalName: goalDescriptions.whereType<String>().toList());
+    }).toList();
   }
+
+
+
 
   Future<BmiEntryData?> getLatestEntry(int userId) async {
     return (db.select(db.bmiEntry)
