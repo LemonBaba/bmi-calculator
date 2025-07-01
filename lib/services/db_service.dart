@@ -1,7 +1,8 @@
 import 'package:drift/drift.dart';
 import '../models/BmiEntryModel.dart';
 import '../models/GoalModel.dart';
-import '../database/app_database.dart'; // your Drift database file
+import '../database/app_database.dart';
+import 'package:flutter/foundation.dart';
 
 class DbService {
   final AppDatabase db;
@@ -279,7 +280,7 @@ class DbService {
           .getSingleOrNull();
 
       if (conflictingAchievement != null) {
-        // Entry already used to fulfill a goal with same target → delete this one
+        // Entry already used to fulfill a goal with same target delete this one
         await deleteGoal(goal.goal.id);
         continue;
       }
@@ -295,7 +296,12 @@ class DbService {
         continue;
       }
 
-      await markGoalAsAchieved(goal.goal.id, entry.id);
+      try {
+        await markGoalAsAchieved(goal.goal.id, entry.id);
+      } catch(e) {
+        debugPrint('Error: ${e}');
+        continue;
+      }
       actuallyAchieved.add(goal);
     }
 

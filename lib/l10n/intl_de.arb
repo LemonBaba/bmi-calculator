@@ -112,5 +112,12 @@
   "bmiCategory_overweight": "Übergewicht",
   "bmiCategory_obesity1": "Adipositas I",
   "bmiCategory_obesity2": "Adipositas II",
-  "bmiCategory_obesity3": "Adipositas III"
+  "bmiCategory_obesity3": "Adipositas III",
+  "error": "Fehler aufgetreten: {error}",
+  "@error": {
+    "description": "Error message shown",
+    "placeholders": {
+      "error": {}
+    }
+  }
 }

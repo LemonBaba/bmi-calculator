@@ -206,4 +206,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bmiCategory_obesity3 => 'Obesity III';
+
+  @override
+  String error(Object error) {
+    return 'Error: $error';
+  }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/db_service.dart';
 import '../database/app_database.dart';
+import '../utils/utils.dart';
 import '../l10n/app_localization_extension.dart';
 import '../l10n/app_localizations.dart';
 
@@ -106,18 +107,18 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
     final bmi = double.tryParse(_bmiController.text.trim());
 
     if (_selectedCategoryId == null && bmi == null) {
-      _showError(l10n.errorProvideCategoryOrBmi);
+      showError(l10n.errorProvideCategoryOrBmi, context);
       return;
     }
 
     if (_lastEntry != null) {
       if (_selectedCategoryId != null && _selectedCategoryId == _lastEntry!.categoryId) {
-        _showError(l10n.errorAlreadyInCategory);
+        showError(l10n.errorAlreadyInCategory, context);
         return;
       }
 
       if (bmi != null && bmi.toStringAsFixed(1) == _lastEntry!.value.toStringAsFixed(1)) {
-        _showError(l10n.errorAlreadyAtTargetBmi);
+        showError(l10n.errorAlreadyAtTargetBmi, context);
         return;
       }
     }
@@ -140,7 +141,7 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
     });
 
     if (duplicateExists) {
-      _showError(l10n.errorDuplicateGoal);
+      showError(l10n.errorDuplicateGoal, context);
       return;
     }
 
@@ -153,9 +154,5 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
     if (mounted) Navigator.pop(context);
   }
 
-  void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
-  }
+
 }

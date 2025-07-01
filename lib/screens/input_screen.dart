@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'achievement_failure_screen.dart';
+import 'categories_screen.dart';
+import '../utils/utils.dart';
 import '../database/app_database.dart';
 import '../services/db_service.dart';
-import 'categories_screen.dart';
 import '../l10n/app_localizations.dart';
 
 class InputScreen extends StatefulWidget {
@@ -35,13 +36,31 @@ class _InputScreenState extends State<InputScreen> {
     }
   }
 
-  void _calculateAndSave() async {
+  void _calculateAndSave(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final weight = double.tryParse(_weightController.text);
     final height = double.tryParse(_heightController.text);
     if (weight == null || height == null) return;
 
+    if (weight < 20 || weight > 300) {
+      showError('Please enter a weight between 20kg and 300kg.', context);
+      return;
+    }
+
+    if (height < 100 || height > 250) {
+      showError('Please enter a height between 100cm and 250cm.', context);
+      return;
+    }
+
     final bmi = weight / ((height / 100) * (height / 100));
-    final category = await widget.dbService.getCategory(bmi: bmi);
+    CategoryData category;
+    try {
+      category = await widget.dbService.getCategory(bmi: bmi);
+    } catch(e) {
+      debugPrint('Error: ${e}');
+      showError(l10n.error(e), context);
+      return;
+    }
 
     final insertedEntry = await widget.dbService.insertBmiEntry(
       userId: widget.userId,
@@ -105,7 +124,7 @@ class _InputScreenState extends State<InputScreen> {
               controller: _weightController,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                FilteringTextInputFormatter.allow(RegExp(r'^\d{0,3}(\.\d?)?$'))
               ],
               decoration: InputDecoration(labelText: l10n.weightInput),
             ),
@@ -114,13 +133,13 @@ class _InputScreenState extends State<InputScreen> {
               controller: _heightController,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                FilteringTextInputFormatter.allow(RegExp(r'^\d{0,3}(\.\d?)?$'))
               ],
               decoration: InputDecoration(labelText: l10n.heightInput),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _calculateAndSave,
+              onPressed: () => _calculateAndSave(context),
               child: Text(l10n.calculateAndSave),
             ),
           ],

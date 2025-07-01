@@ -208,4 +208,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get bmiCategory_obesity3 => 'Adipositas III';
+
+  @override
+  String error(Object error) {
+    return 'Fehler aufgetreten: $error';
+  }
 }

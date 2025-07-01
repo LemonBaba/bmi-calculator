@@ -457,6 +457,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Obesity III'**
   String get bmiCategory_obesity3;
+
+  /// Error message shown
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String error(Object error);
 }
 
 class _AppLocalizationsDelegate

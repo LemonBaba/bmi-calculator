@@ -112,5 +112,12 @@
   "bmiCategory_overweight": "Overweight",
   "bmiCategory_obesity1": "Obesity I",
   "bmiCategory_obesity2": "Obesity II",
-  "bmiCategory_obesity3": "Obesity III"
+  "bmiCategory_obesity3": "Obesity III",
+  "error": "Error: {error}",
+  "@error": {
+    "description": "Error message shown",
+    "placeholders": {
+      "error": {}
+    }
+  }
 }
