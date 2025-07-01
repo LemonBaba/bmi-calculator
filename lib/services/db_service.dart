@@ -193,10 +193,7 @@ class DbService {
     for (final group in goalGroups.entries) {
       final goals = group.value;
 
-      if (goals.length <= 1) continue; // No duplicates
-
-      // Pick one to keep
-      final GoalModel toKeep = goals.first;
+      if (goals.length <= 1) continue;
 
       // Delete the rest
       for (final g in goals.skip(1)) {
