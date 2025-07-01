@@ -147,7 +147,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get heightInput => 'Größe (cm)';
 
   @override
-  String get calculateAndSave => 'Berechnen & speichern';
+  String get calculateAndSave => 'Berechnen & Speichern';
 
   @override
   String get loginTitle => 'Login';
