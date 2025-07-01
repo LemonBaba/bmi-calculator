@@ -163,11 +163,12 @@ class _GoalsScreenState extends State<GoalsScreen> {
                 },
                 child: Card(
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  color: isAchieved ? Colors.green.shade100 : null,
                   elevation: 3,
                   child: ListTile(
                     leading: Icon(
                       Icons.flag,
-                      color: isAchieved ? Colors.green : Colors.grey,
+                      color: isAchieved ? Colors.red : Colors.grey,
                     ),
                     title: hasCategory
                         ? Text(l10n.categoryLabel(AppLocalizations.of(context)!.localizeCategory(g.category!.name)))
