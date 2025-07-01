@@ -1319,7 +1319,7 @@ class $GoalAchievementTable extends GoalAchievement
     aliasedName,
     false,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES goal (id) ON DELETE CASCADE',
     ),
@@ -1368,8 +1368,6 @@ class $GoalAchievementTable extends GoalAchievement
         _goalIdMeta,
         goalId.isAcceptableOrUnknown(data['goal_id']!, _goalIdMeta),
       );
-    } else if (isInserting) {
-      context.missing(_goalIdMeta);
     }
     if (data.containsKey('entry_id')) {
       context.handle(
@@ -1394,7 +1392,7 @@ class $GoalAchievementTable extends GoalAchievement
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {goalId, entryId};
+  Set<GeneratedColumn> get $primaryKey => {goalId};
   @override
   GoalAchievementData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -1512,32 +1510,26 @@ class GoalAchievementCompanion extends UpdateCompanion<GoalAchievementData> {
   final Value<int> goalId;
   final Value<int> entryId;
   final Value<String> achievementDate;
-  final Value<int> rowid;
   const GoalAchievementCompanion({
     this.goalId = const Value.absent(),
     this.entryId = const Value.absent(),
     this.achievementDate = const Value.absent(),
-    this.rowid = const Value.absent(),
   });
   GoalAchievementCompanion.insert({
-    required int goalId,
+    this.goalId = const Value.absent(),
     required int entryId,
     required String achievementDate,
-    this.rowid = const Value.absent(),
-  }) : goalId = Value(goalId),
-       entryId = Value(entryId),
+  }) : entryId = Value(entryId),
        achievementDate = Value(achievementDate);
   static Insertable<GoalAchievementData> custom({
     Expression<int>? goalId,
     Expression<int>? entryId,
     Expression<String>? achievementDate,
-    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (goalId != null) 'goal_id': goalId,
       if (entryId != null) 'entry_id': entryId,
       if (achievementDate != null) 'achievement_date': achievementDate,
-      if (rowid != null) 'rowid': rowid,
     });
   }
 
@@ -1545,13 +1537,11 @@ class GoalAchievementCompanion extends UpdateCompanion<GoalAchievementData> {
     Value<int>? goalId,
     Value<int>? entryId,
     Value<String>? achievementDate,
-    Value<int>? rowid,
   }) {
     return GoalAchievementCompanion(
       goalId: goalId ?? this.goalId,
       entryId: entryId ?? this.entryId,
       achievementDate: achievementDate ?? this.achievementDate,
-      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -1567,9 +1557,6 @@ class GoalAchievementCompanion extends UpdateCompanion<GoalAchievementData> {
     if (achievementDate.present) {
       map['achievement_date'] = Variable<String>(achievementDate.value);
     }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
     return map;
   }
 
@@ -1578,8 +1565,7 @@ class GoalAchievementCompanion extends UpdateCompanion<GoalAchievementData> {
     return (StringBuffer('GoalAchievementCompanion(')
           ..write('goalId: $goalId, ')
           ..write('entryId: $entryId, ')
-          ..write('achievementDate: $achievementDate, ')
-          ..write('rowid: $rowid')
+          ..write('achievementDate: $achievementDate')
           ..write(')'))
         .toString();
   }
@@ -3339,17 +3325,15 @@ typedef $$GoalTableProcessedTableManager =
     >;
 typedef $$GoalAchievementTableCreateCompanionBuilder =
     GoalAchievementCompanion Function({
-      required int goalId,
+      Value<int> goalId,
       required int entryId,
       required String achievementDate,
-      Value<int> rowid,
     });
 typedef $$GoalAchievementTableUpdateCompanionBuilder =
     GoalAchievementCompanion Function({
       Value<int> goalId,
       Value<int> entryId,
       Value<String> achievementDate,
-      Value<int> rowid,
     });
 
 final class $$GoalAchievementTableReferences
@@ -3619,24 +3603,20 @@ class $$GoalAchievementTableTableManager
                 Value<int> goalId = const Value.absent(),
                 Value<int> entryId = const Value.absent(),
                 Value<String> achievementDate = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
               }) => GoalAchievementCompanion(
                 goalId: goalId,
                 entryId: entryId,
                 achievementDate: achievementDate,
-                rowid: rowid,
               ),
           createCompanionCallback:
               ({
-                required int goalId,
+                Value<int> goalId = const Value.absent(),
                 required int entryId,
                 required String achievementDate,
-                Value<int> rowid = const Value.absent(),
               }) => GoalAchievementCompanion.insert(
                 goalId: goalId,
                 entryId: entryId,
                 achievementDate: achievementDate,
-                rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
               .map(

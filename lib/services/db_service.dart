@@ -52,31 +52,13 @@ class DbService {
 
   Future<void> deleteBmiEntry(int entryId, int userId) async {
     await (db.delete(db.bmiEntry)..where((e) => e.id.equals(entryId))).go();
+    await deleteDuplicateUnachievedGoals(userId);
 
-    // Get the new latest entry after deletion
-    final latest = await getLatestEntry(userId);
-    if (latest == null) return;
+    final lastEntry = await getLatestEntry(userId);
+    if (lastEntry == null) return;
 
-    // Get all unachieved goals
-    final goals = await getGoalsForUser(userId);
-
-    for (final g in goals) {
-      final isAchieved = g.achievements.isNotEmpty;
-      if (isAchieved) continue;
-
-      final matchesCategory = g.goal.targetCategory != null &&
-          g.goal.targetCategory == latest.categoryId;
-
-      final matchesBmi = g.goal.targetBmi != null &&
-          g.goal.targetBmi!.toStringAsFixed(1) == latest.value.toStringAsFixed(1);
-
-      // If now fulfilled already delete the unnecessary goal
-      if (matchesCategory || matchesBmi) {
-        await deleteGoal(g.goal.id);
-      }
-    }
+    createAchievements(lastEntry, userId);
   }
-
 
   Future<List<BmiEntryModel>> getBmiEntries(int userId) async {
     final query = db.select(db.bmiEntry).join([
@@ -128,7 +110,7 @@ class DbService {
     final result = await query.getSingleOrNull();
 
     if (result == null) {
-      throw StateError("Keine passende Kategorie für BMI $bmi gefunden.");
+      throw StateError("Keine passende Kategorie für BMI $bmi gefunden."); // todo catch in ui
     }
 
     return result;
@@ -191,7 +173,48 @@ class DbService {
     await (db.delete(db.goal)..where((g) => g.id.equals(goalId))).go();
   }
 
+  Future<void> deleteDuplicateUnachievedGoals(int userId) async {
+    final goals = await getGoalsForUser(userId);
+    final unachievedGoals = goals.where((g) => g.achievements.isEmpty).toList();
+
+    // Group unachieved goals by criteria (same targetBmi or targetCategory)
+    final Map<String, List<GoalModel>> goalGroups = {};
+
+    for (final g in unachievedGoals) {
+      final key = g.goal.targetCategory != null
+          ? 'category:${g.goal.targetCategory}'
+          : g.goal.targetBmi != null
+          ? 'bmi:${g.goal.targetBmi!.toStringAsFixed(1)}'
+          : 'none';
+
+      goalGroups.putIfAbsent(key, () => []).add(g);
+    }
+
+    for (final group in goalGroups.entries) {
+      final goals = group.value;
+
+      if (goals.length <= 1) continue; // No duplicates
+
+      // Pick one to keep
+      final GoalModel toKeep = goals.first;
+
+      // Delete the rest
+      for (final g in goals.skip(1)) {
+        await deleteGoal(g.goal.id);
+      }
+    }
+  }
+
   Future<void> markGoalAsAchieved(int goalId, int entryId) async {
+    // Ensure the goal isn't already achieved
+    final existing = await (db.select(db.goalAchievement)
+      ..where((g) => g.goalId.equals(goalId)))
+        .getSingleOrNull();
+
+    if (existing != null) {
+      throw StateError("Goal $goalId already has an achievement.");
+    }
+
     await db.into(db.goalAchievement).insert(
       GoalAchievementCompanion(
         goalId: Value(goalId),
@@ -200,4 +223,26 @@ class DbService {
       ),
     );
   }
+
+  Future<List<GoalModel>> createAchievements(BmiEntryData entry, int userId) async {
+    final allGoals = await getGoalsForUser(userId);
+
+    final matchedGoals = allGoals.where((goal) {
+      final bmiMatch = goal.goal.targetBmi != null &&
+          entry.value.toStringAsFixed(1) == goal.goal.targetBmi!.toStringAsFixed(1);
+
+      final catMatch = goal.goal.targetCategory != null &&
+          entry.categoryId == goal.goal.targetCategory;
+
+      final notAchieved = goal.achievements.isEmpty;
+
+      return (bmiMatch || catMatch) && notAchieved;
+    }).toList();
+
+    for (final goal in matchedGoals) {
+      await markGoalAsAchieved(goal.goal.id, entry.id);
+    }
+    return matchedGoals;
+  }
+
 }

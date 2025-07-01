@@ -37,13 +37,23 @@ class Goal extends Table {
 }
 
 class GoalAchievement extends Table {
-  IntColumn get goalId => integer().references(Goal, #id, onDelete: KeyAction.cascade)();
-  IntColumn get entryId => integer().references(BmiEntry, #id, onDelete: KeyAction.cascade)();
+  IntColumn get goalId =>
+      integer().references(Goal, #id, onDelete: KeyAction.cascade)();
+
+  IntColumn get entryId =>
+      integer().references(BmiEntry, #id, onDelete: KeyAction.cascade)();
+
   TextColumn get achievementDate => text()();
 
   @override
-  Set<Column> get primaryKey => {goalId, entryId};
+  Set<Column> get primaryKey => {goalId};
+
+  @override
+  List<String> get customConstraints => [
+    'UNIQUE(goal_id, entry_id)'
+  ];
 }
+
 
 
 
