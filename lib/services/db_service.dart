@@ -239,10 +239,40 @@ class DbService {
       return (bmiMatch || catMatch) && notAchieved;
     }).toList();
 
-    for (final goal in matchedGoals) {
-      await markGoalAsAchieved(goal.goal.id, entry.id);
-    }
-    return matchedGoals;
-  }
+    final List<GoalModel> actuallyAchieved = [];
 
+    for (final goal in matchedGoals) {
+      // Check if this entry already fulfilled another goal with same targetBmi or targetCategory
+      final conflictingAchievement = await (db.select(db.goalAchievement).join([
+        innerJoin(db.goal, db.goal.id.equalsExp(db.goalAchievement.goalId))
+      ])
+        ..where(db.goalAchievement.entryId.equals(entry.id))
+        ..where((goal.goal.targetCategory != null)
+            ? db.goal.targetCategory.equals(goal.goal.targetCategory!)
+            : db.goal.targetBmi.equals(goal.goal.targetBmi!)))
+          .getSingleOrNull();
+
+      if (conflictingAchievement != null) {
+        // Entry already used to fulfill a goal with same target → delete this one
+        await deleteGoal(goal.goal.id);
+        continue;
+      }
+
+      // Check if (goalId, entryId) already exists (just for safety)
+      final alreadyExists = await (db.select(db.goalAchievement)
+        ..where((ga) =>
+        ga.goalId.equals(goal.goal.id) & ga.entryId.equals(entry.id)))
+          .getSingleOrNull();
+
+      if (alreadyExists != null) {
+        await deleteGoal(goal.goal.id);
+        continue;
+      }
+
+      await markGoalAsAchieved(goal.goal.id, entry.id);
+      actuallyAchieved.add(goal);
+    }
+
+    return actuallyAchieved;
+  }
 }
