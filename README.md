@@ -21,6 +21,19 @@ Ensure the following tools are installed on your system:
 - [Android Studio](https://developer.android.com/studio) or [VS Code](https://code.visualstudio.com/) (optional)
 - Android Emulator or real device for testing (optional)
 
+## Getting started
+
+### install dependencies
+
+```bash
+flutter pub get
+```
+
+### run
+```bash
+flutter run
+```
+
 ## Screens
 
 ### Login
@@ -52,19 +65,6 @@ Ensure the following tools are installed on your system:
 
 ### Category Detail
 ![img_3.png](readme_category_detail_screen.png)
-
-## Getting started
-
-### install dependencies
-
-```bash
-flutter pub get
-```
-
-### run
-```bash
-flutter run
-```
 
 ## Development
 
