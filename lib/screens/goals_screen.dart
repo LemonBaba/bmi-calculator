@@ -4,6 +4,7 @@ import '../models/GoalModel.dart';
 import 'categories_screen.dart';
 import 'goal_form_screen.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_localization_extension.dart';
 import '../l10n/app_localizations.dart';
 
 class GoalsScreen extends StatefulWidget {
@@ -169,7 +170,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
                       color: isAchieved ? Colors.green : Colors.grey,
                     ),
                     title: hasCategory
-                        ? Text(l10n.categoryLabel(g.category!.name))
+                        ? Text(l10n.categoryLabel(AppLocalizations.of(context)!.localizeCategory(g.category!.name)))
                         : Text(l10n.bmiGoalLabel(g.goal.targetBmi!.toStringAsFixed(1))),
                     subtitle: dateText != null ? Text(dateText) : null,
                   ),

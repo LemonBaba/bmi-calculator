@@ -415,6 +415,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'German'**
   String get languageGerman;
+
+  /// No description provided for @bmiCategory_underweight.
+  ///
+  /// In en, this message translates to:
+  /// **'Underweight'**
+  String get bmiCategory_underweight;
+
+  /// No description provided for @bmiCategory_normal.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal weight'**
+  String get bmiCategory_normal;
+
+  /// No description provided for @bmiCategory_overweight.
+  ///
+  /// In en, this message translates to:
+  /// **'Overweight'**
+  String get bmiCategory_overweight;
+
+  /// No description provided for @bmiCategory_obesity1.
+  ///
+  /// In en, this message translates to:
+  /// **'Obesity I'**
+  String get bmiCategory_obesity1;
+
+  /// No description provided for @bmiCategory_obesity2.
+  ///
+  /// In en, this message translates to:
+  /// **'Obesity II'**
+  String get bmiCategory_obesity2;
+
+  /// No description provided for @bmiCategory_obesity3.
+  ///
+  /// In en, this message translates to:
+  /// **'Obesity III'**
+  String get bmiCategory_obesity3;
 }
 
 class _AppLocalizationsDelegate

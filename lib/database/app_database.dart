@@ -61,19 +61,15 @@ class AppDatabase extends _$AppDatabase {
       await customStatement('PRAGMA foreign_keys = ON');
       await batch((batch) {
         batch.insertAll(category, [
-          CategoryCompanion.insert(name: 'Untergewicht', from: 0, to: 18.5),
-          CategoryCompanion.insert(name: 'Normalgewicht', from: 18.5, to: 24.9),
-          CategoryCompanion.insert(name: 'Übergewicht', from: 25, to: 29.9),
-          CategoryCompanion.insert(name: 'Adipositas I', from: 30, to: 34.9),
-          CategoryCompanion.insert(name: 'Adipositas II', from: 35, to: 39.9),
-          CategoryCompanion.insert(name: 'Adipositas III', from: 40, to: 100),
+          CategoryCompanion.insert(name: 'underweight', from: 0, to: 18.5),
+          CategoryCompanion.insert(name: 'normal', from: 18.5, to: 24.9),
+          CategoryCompanion.insert(name: 'overweight', from: 25, to: 29.9),
+          CategoryCompanion.insert(name: 'obesity1', from: 30, to: 34.9),
+          CategoryCompanion.insert(name: 'obesity2', from: 35, to: 39.9),
+          CategoryCompanion.insert(name: 'obesity3', from: 40, to: 100),
         ]);
       });
     },
-    beforeOpen: (m) async {
-      await customStatement('PRAGMA foreign_keys = ON');
-    },
-
   );
 }
 

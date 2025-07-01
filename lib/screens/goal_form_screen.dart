@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/db_service.dart';
 import '../database/app_database.dart';
+import '../l10n/app_localization_extension.dart';
 import '../l10n/app_localizations.dart';
 
 class GoalFormScreen extends StatefulWidget {
@@ -64,7 +65,7 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
                     items: categories.map((cat) {
                       return DropdownMenuItem(
                         value: cat.id,
-                        child: Text("${cat.name} (${cat.from} – ${cat.to})"),
+                        child: Text("${AppLocalizations.of(context)!.localizeCategory(cat.name)} (${cat.from} – ${cat.to})"),
                       );
                     }).toList(),
                     onChanged: (_bmiController.text.isNotEmpty)

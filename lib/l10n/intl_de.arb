@@ -105,5 +105,12 @@
   "settingsTitle": "Einstellungen",
   "logoutButton": "Abmelden",
   "languageEnglish": "Englisch",
-  "languageGerman": "Deutsch"
+  "languageGerman": "Deutsch",
+  "bmiCategory_underweight": "Untergewicht",
+  "bmiCategory_normal": "Normalgewicht",
+  "bmiCategory_overweight": "Übergewicht",
+  "bmiCategory_obesity1": "Adipositas I",
+  "bmiCategory_obesity2": "Adipositas II",
+  "bmiCategory_obesity3": "Adipositas III"
+
 }

@@ -105,5 +105,11 @@
   "settingsTitle": "Settings",
   "logoutButton": "Log out",
   "languageEnglish": "English",
-  "languageGerman": "German"
+  "languageGerman": "German",
+  "bmiCategory_underweight": "Underweight",
+  "bmiCategory_normal": "Normal weight",
+  "bmiCategory_overweight": "Overweight",
+  "bmiCategory_obesity1": "Obesity I",
+  "bmiCategory_obesity2": "Obesity II",
+  "bmiCategory_obesity3": "Obesity III"
 }

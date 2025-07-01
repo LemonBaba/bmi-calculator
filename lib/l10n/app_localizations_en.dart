@@ -185,4 +185,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get languageGerman => 'German';
+
+  @override
+  String get bmiCategory_underweight => 'Underweight';
+
+  @override
+  String get bmiCategory_normal => 'Normal weight';
+
+  @override
+  String get bmiCategory_overweight => 'Overweight';
+
+  @override
+  String get bmiCategory_obesity1 => 'Obesity I';
+
+  @override
+  String get bmiCategory_obesity2 => 'Obesity II';
+
+  @override
+  String get bmiCategory_obesity3 => 'Obesity III';
 }

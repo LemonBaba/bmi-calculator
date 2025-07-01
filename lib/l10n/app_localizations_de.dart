@@ -187,4 +187,22 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get languageGerman => 'Deutsch';
+
+  @override
+  String get bmiCategory_underweight => 'Untergewicht';
+
+  @override
+  String get bmiCategory_normal => 'Normalgewicht';
+
+  @override
+  String get bmiCategory_overweight => 'Übergewicht';
+
+  @override
+  String get bmiCategory_obesity1 => 'Adipositas I';
+
+  @override
+  String get bmiCategory_obesity2 => 'Adipositas II';
+
+  @override
+  String get bmiCategory_obesity3 => 'Adipositas III';
 }

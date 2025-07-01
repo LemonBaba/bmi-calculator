@@ -1,3 +1,4 @@
+import 'package:bmi_manager/l10n/app_localization_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import '../models/GoalModel.dart';
@@ -41,7 +42,7 @@ class AchievementScreen extends StatelessWidget {
                       const SizedBox(height: 12),
                       ...goals.map((goal) {
                         final goalText = goal.category != null
-                            ? goal.category!.name
+                            ? AppLocalizations.of(context)!.localizeCategory(goal.category!.name)
                             : goal.goal.targetBmi?.toStringAsFixed(1);
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),

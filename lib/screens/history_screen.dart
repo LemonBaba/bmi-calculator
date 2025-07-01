@@ -4,6 +4,7 @@ import '../models/BmiEntryModel.dart';
 import 'categories_screen.dart';
 import 'input_screen.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_localization_extension.dart';
 import '../l10n/app_localizations.dart';
 
 class HistoryScreen extends StatefulWidget {
@@ -132,7 +133,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     title: Text(
                       l10n.bmiCategoryValue(
                         e.entry.value.toStringAsFixed(1),
-                        e.category.name,
+                          AppLocalizations.of(context)!.localizeCategory(e.category.name)
                       ),
                     ),
                     subtitle: Text(
