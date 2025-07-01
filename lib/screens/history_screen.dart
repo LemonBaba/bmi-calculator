@@ -88,6 +88,25 @@ class _HistoryScreenState extends State<HistoryScreen> with RouteAware {
     }
   }
 
+  Color _getCategoryColor(String categoryName) {
+    switch (categoryName) {
+      case 'underweight':
+        return Colors.orange.shade100;
+      case 'normal':
+        return Colors.green.shade100;
+      case 'overweight':
+        return Colors.orange.shade100;
+      case 'obesity1':
+        return Colors.deepOrange.shade200;
+      case 'obesity2':
+        return Colors.red.shade200;
+      case 'obesity3':
+        return Colors.red.shade400;
+      default:
+        return Colors.grey.shade300;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -154,6 +173,7 @@ class _HistoryScreenState extends State<HistoryScreen> with RouteAware {
                 },
                 child: Card(
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  color: _getCategoryColor(e.category.name),
                   elevation: 3,
                   child: ListTile(
                     title: Text(

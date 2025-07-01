@@ -76,7 +76,7 @@ class AppDatabase extends _$AppDatabase {
           CategoryCompanion.insert(name: 'overweight', from: 25.0, to: 29.999),
           CategoryCompanion.insert(name: 'obesity1', from: 30.0, to: 34.999),
           CategoryCompanion.insert(name: 'obesity2', from: 35.0, to: 39.999),
-          CategoryCompanion.insert(name: 'obesity3', from: 40.0, to: double.maxFinite),
+          CategoryCompanion.insert(name: 'obesity3', from: 40.0, to: 1000.00),
         ]);
       });
     },
